@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boletim de Notícias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--primary-color:#ff9800;--primary-color-darker:#e68a00;--background-dark:#000;--text-light:#fff;--text-dark:#222;--text-medium:#333;--surface-dark-1:rgba(34,34,34,.7);--surface-dark-2:#3a3a3a;--surface-light-1:#e9e9e9;--surface-light-2:#f7f7f7;--border-color-dark:#555;--border-color-light:#ddd;--font-primary:'Open Sans',sans-serif;--font-headings:'Merriweather',serif;--font-mono:'Roboto Mono',monospace}
+*,:before,:after{box-sizing:border-box}
+html,body{height:100%}
+html{scroll-behavior:smooth;background:var(--background-dark)}
+body{margin:0;padding:0;min-height:100%;background:var(--background-dark);font-family:var(--font-primary);color:var(--text-light)}
+.body-modal-open{overflow:hidden}
+.visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.tts-pause-element{display:block;width:0;height:0;overflow:hidden;pause-after:5s;-webkit-speech-pause-after:5s;speak:none}
+h1,h2,h3,.accordion-header{font-family:var(--font-headings)}
+p,li{line-height:1.6}
+.container{max-width:1140px;margin:0 auto;padding:20px 15px;display:flex;flex-direction:column;align-items:center}
+header{text-align:center;padding:20px 0;margin-bottom:20px;width:100%}
+header h1{margin:0;font-size:2.3em;letter-spacing:2px;color:var(--primary-color)}
+header .edition{margin-top:10px;font-size:1.2em;color:var(--text-light);font-style:italic}
+.menu-toggle{display:block;position:relative;width:44px;height:36px;background:0;border:1px solid var(--primary-color);border-radius:4px;cursor:pointer;margin:0 auto 20px;z-index:100}
+.menu-toggle:hover{background:rgba(255,152,0,.1)}
+.menu-toggle:focus-visible{outline:2px solid var(--primary-color);outline-offset:2px}
+.menu-toggle .hamburger-line{display:block;position:absolute;height:3px;width:26px;background:var(--primary-color);border-radius:2px;left:50%;transform:translateX(-50%);transition:transform .3s,opacity .3s,top .3s}
+.menu-toggle .hamburger-line:nth-child(2){top:16px} /* linha do meio */
+.menu-toggle .hamburger-line:nth-child(1){top:8px}
+.menu-toggle .hamburger-line:nth-child(3){top:24px}
+.menu-toggle.active .hamburger-line:nth-child(1){top:16px;transform:translateX(-50%) rotate(45deg)}
+.menu-toggle.active .hamburger-line:nth-child(2){opacity:0}
+.menu-toggle.active .hamburger-line:nth-child(3){top:16px;transform:translateX(-50%) rotate(-45deg)}
+.menu{background:rgba(68,68,68,.9);padding:0 20px;margin-bottom:40px;border-radius:5px;box-shadow:0 2px 6px rgba(0,0,0,.2);width:100%;max-width:800px;transition:padding .4s}
+.menu.active{padding:15px 20px}
+.menu ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;width:100%;max-height:0;overflow:hidden;transition:max-height .4s}
+.menu.active ul{max-height:500px}
+.menu ul li{margin:8px 0;width:90%;max-width:350px;text-align:center}
+.menu ul li a{text-decoration:none;color:var(--text-light);font-weight:bold;transition:color .3s,background-color .3s;cursor:pointer;font-family:var(--font-mono);font-size:.95em;display:block;padding:10px 5px;border-radius:4px}
+.menu ul li a:hover,.menu ul li a:focus{color:var(--text-dark);background:var(--primary-color);outline:none}
+.home-highlights-section{width:100%;margin:20px 0 40px;padding:20px;background:var(--surface-dark-1);border:1px solid var(--border-color-dark);border-radius:8px;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+.home-highlights-section h2{color:var(--primary-color);margin:0 0 20px;font-size:1.8em;border-bottom:1px solid var(--border-color-dark);padding-bottom:10px}
+.highlights-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px}
+.highlight-item{background:var(--surface-dark-2);padding:15px;border-radius:6px;border:1px solid #666;display:flex;flex-direction:column;justify-content:space-between;transition:transform .3s,box-shadow .3s}
+.highlight-item:hover{transform:translateY(-5px);box-shadow:0 6px 12px rgba(0,0,0,.3)}
+.highlight-item h3{font-size:1.2em;color:var(--primary-color);margin:0 0 12px;text-align:center}
+.highlight-thumbnail{width:100%;height:150px;object-fit:cover;border-radius:4px;margin-bottom:12px;border:1px solid #505050}
+.highlight-article-title{font-size:.9em;margin-bottom:15px;color:#eee;text-align:center;flex-grow:1}
+.read-more-link{display:block;width:fit-content;margin:auto auto 0;text-decoration:none;color:var(--text-dark);background:var(--primary-color);padding:8px 12px;border-radius:4px;font-weight:bold;transition:background-color .3s,color .3s;text-align:center;font-size:.9em}
+.read-more-link:hover,.read-more-link:focus{background:var(--primary-color-darker);color:var(--text-light);outline:none}
+.news-section{display:none}
+article.news-article{padding:20px;background:var(--text-light);color:var(--text-medium)}
+article.news-article h3{font-size:1.4em;margin:18px 0 10px;border-bottom:1px solid var(--border-color-light);padding-bottom:10px;text-align:center;color:#111}
+article.news-article p{text-align:justify;font-size:1em;color:var(--text-medium);margin:12px 0}
+.article-image{margin-bottom:20px;overflow:hidden;border-radius:8px;border:1px solid var(--border-color-light)}
+.article-image img{width:100%;height:auto;max-height:350px;object-fit:cover;display:block;transition:transform .3s;cursor:pointer}
+.article-image img:hover{transform:scale(1.05)}
+.article-image img:focus{outline:2px solid var(--primary-color);outline-offset:2px}
+.modal{visibility:hidden;opacity:0;position:fixed;z-index:10000;inset:0;background:rgba(0,0,0,.85);transition:opacity .25s,visibility 0s linear .25s;display:flex;align-items:center;justify-content:center;padding:10px}
+.modal.modal-open{visibility:visible;opacity:1;transition:opacity .25s}
+.modal-content{background:var(--surface-light-1);padding:15px 15px 15px;border:1px solid #aaa;width:100%;max-width:950px;height:100%;border-radius:10px;position:relative;color:var(--text-medium);font-size:.9rem;box-shadow:0 5px 15px rgba(0,0,0,.3);overflow:hidden;transform:scale(.95);transition:transform .25s;display:flex;flex-direction:column;padding-top:50px}
+.modal.modal-open .modal-content{transform:scale(1)}
+#modal-body{display:flex;flex-direction:column;flex-grow:1;min-height:0}
+.section-title-in-modal{font-size:1.6em;margin:0 0 18px;border-bottom:2px solid var(--border-color-dark);padding-bottom:10px;text-align:center;color:var(--primary-color);flex-shrink:0}
+.modal-close{background:0;border:none;color:#555;position:absolute;top:15px;right:20px;font-size:32px;font-weight:bold;cursor:pointer;line-height:1;padding:0 5px;z-index:10}
+.modal-close:hover,.modal-close:focus{color:#000;outline:2px solid var(--primary-color);outline-offset:2px}
+.accordion-container{overflow-y:auto;flex-grow:1}
+.accordion-header{background:#d0d0d0;color:var(--text-dark);cursor:pointer;padding:12px 35px 12px 12px;border:1px solid #bbb;margin:15px 0 0;font-size:1.15em;text-align:center;border-radius:5px 5px 0 0;transition:background-color .3s;width:100%;display:block;position:relative}
+.accordion-header:hover{background:#c0c0c0}
+.accordion-header.active{background:#b8b8b8;border-bottom-left-radius:0;border-bottom-right-radius:0}
+.accordion-header:focus{outline:2px solid var(--primary-color);outline-offset:2px;background:#c8c8c8}
+.accordion-header::after{content:'\002B';font-size:1.1em;font-weight:bold;color:#444;position:absolute;right:12px;top:50%;transform:translateY(-50%);transition:transform .2s}
+.accordion-header.active::after{content:'\2212'}
+.accordion-content{background:var(--surface-light-2);color:var(--text-medium);padding:15px;display:none;border:1px solid #bbb;border-top:none;border-radius:0 0 5px 5px;overflow:hidden}
+.accordion-content .news-article{background:var(--text-light);border-radius:6px;border:1px solid var(--border-color-light);margin:0;padding:20px}
+.accordion-container::-webkit-scrollbar{width:10px}
+.accordion-container::-webkit-scrollbar-track{background:rgba(0,0,0,.1);border-radius:10px}
+.accordion-container::-webkit-scrollbar-thumb{background:#888;border-radius:10px;border:2px solid var(--surface-light-1)}
+.accordion-container::-webkit-scrollbar-thumb:hover{background:#555}
+.image-modal{visibility:hidden;opacity:0;position:fixed;z-index:10100;inset:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;transition:opacity .25s,visibility 0s linear .25s;padding:20px}
+.image-modal.modal-open{visibility:visible;opacity:1;transition:opacity .25s}
+.image-modal-content{margin:auto;display:block;max-width:95%;max-height:95%;object-fit:contain;animation:zoomInModalImage .3s;border-radius:4px}
+@keyframes zoomInModalImage{from{transform:scale(.7);opacity:.5}to{transform:scale(1);opacity:1}}
+.image-modal-close{background:0;border:none;position:absolute;top:10px;right:25px;color:#f1f1f1;font-size:35px;font-weight:bold;transition:.3s;cursor:pointer;line-height:1;padding:0 5px}
+.image-modal-close:hover,.image-modal-close:focus{color:#bbb;outline:2px solid var(--primary-color);outline-offset:2px}
+@media (min-width:601px){
+.container{padding:30px 20px}
+header h1{font-size:2.8em}
+header .edition{font-size:1.3em}
+.menu ul{flex-direction:row;flex-wrap:wrap;justify-content:center}
+.menu ul li{margin:5px 8px;width:auto;max-width:none}
+.menu ul li a{padding:8px 12px;font-size:.9em}
+.home-highlights-section h2{font-size:2em}
+.modal{padding:15px}
+.modal-content{padding:20px 20px 20px;padding-top:55px}
+.section-title-in-modal{font-size:1.8em}
+article.news-article h3{font-size:1.6em}
+.accordion-header{font-size:1.2em;padding:14px 40px 14px 14px}
+}
+@media (min-width:992px){
+.container{padding:40px 30px}
+header h1{font-size:3.5em}
+header .edition{font-size:1.5em}
+.menu ul{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 12px}
+.menu ul li{margin:0;width:100%}
+.menu ul li a{font-size:.95em;padding:10px 5px}
+.highlights-grid{grid-template-columns:repeat(3,1fr);gap:25px}
+.home-highlights-section h2{font-size:2.2em}
+.section-title-in-modal{font-size:2.2em}
+article.news-article h3{font-size:1.8em}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>Boletim Semanal de Notícias</h1>
+  <p class="edition">Atualizado em: 16/08/2025</p>
+</header>
+
+<button id="menu-toggle" class="menu-toggle" aria-controls="main-menu" aria-expanded="false">
+  <span class="visually-hidden">Abrir/Fechar Menu</span>
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+</button>
+
+<nav class="menu">
+  <ul id="main-menu" role="menu">
+    <li><a href="#inteligencia-artificial" role="menuitem">INTELIGÊNCIA ARTIFICIAL</a></li>
+    <li><a href="#inovacao-tecnologica" role="menuitem">INOVAÇÃO TECNOLÓGICA</a></li>
+    <li><a href="#saude-tecnologia" role="menuitem">SAÚDE E TECNOLOGIA</a></li>
+    <li><a href="#deu-ruim" role="menuitem">BUGOU!</a></li>
+    <li><a href="#noticias-variadas" role="menuitem">NOTÍCIAS VARIADAS</a></li>
+    <li><a href="#curiosidades" role="menuitem">CURIOSIDADES</a></li>
+  </ul>
+</nav>
+
+<main>
+  <section id="home-highlights" class="home-highlights-section">
+    <h2>Destaques da Semana</h2>
+    <div class="highlights-grid"></div>
+  </section>
+
+  <section id="inteligencia-artificial" class="news-section">
+    <h2>INTELIGÊNCIA ARTIFICIAL</h2>
+    <article class="news-article">
+      <div class="article-image">
+        <img src="https://convergenciadigital.com.br/wp-content/uploads/2022/10/inteligencia-artificial_brasil.jpg" alt="Marco Regulatório da IA em Debate no Brasil">
+      </div>
+      <h3>Marco Regulatório da IA em Debate no Brasil</h3>
+      <p>A discussão sobre o futuro da <strong>Inteligência Artificial</strong> no Brasil ganha novos capítulos com a tramitação do <strong>Marco Legal da IA</strong> no <strong>Congresso Nacional</strong>. A proposta busca equilibrar inovação e proteção de direitos, com opiniões divididas entre especialistas, empresas e sociedade civil.</p>
+      <p>O projeto classifica sistemas por grau de risco, inspirado no <strong>AI Act</strong> europeu, exigindo mais transparência e segurança em áreas sensíveis como <strong>saúde</strong>, <strong>segurança</strong> e <strong>justiça</strong>.</p>
+      <p>Há quem defenda a <strong>segurança jurídica</strong> da regulação e quem tema impacto à inovação. O debate inclui responsabilização adequada e mitigações de vieses.</p>
+      <p><strong>Dados e LGPD</strong>: prevê explicação e revisão humana de decisões automatizadas, alinhado à <strong>LGPD</strong>. Casos como <strong>Clearview AI</strong> reforçam a necessidade de regras claras.</p>
+      <p>A <strong>Câmara</strong> avalia descentralizar a supervisão para agências setoriais (<strong>ANVISA</strong>, <strong>ANAC</strong> etc.). Um bom arcabouço pode posicionar o Brasil de forma competitiva e ética.</p>
+    </article>
+    <article class="news-article">
+  <div class="article-image">
+    <img src="https://cultura.uol.com.br/upload/tvcultura/noticias/20250812114311_pesquisachatgpt.jpg" alt="OpenAI Expressa Preocupações com o Marco da IA no Brasil">
+  </div>
+  <h3>OpenAI Expressa Preocupações com o Marco da IA no Brasil</h3>
+  <p>A <strong>OpenAI</strong>, líder global em <strong>inteligência artificial</strong>, manifestou suas preocupações em relação ao projeto de lei que busca regular a tecnologia no Brasil. Segundo <strong>Nicolas Andrade</strong>, chefe de política da empresa para a América Latina e Caribe, o <strong>PL 2338</strong> poderia prejudicar o desenvolvimento tecnológico no país, caso não sejam realizados ajustes. A empresa destaca a importância do mercado brasileiro, que é um dos maiores em número de usuários do <strong>ChatGPT</strong>.</p>
+  <p>Andrade defende que a legislação deve se alinhar com o <strong>Plano Brasileiro de Inteligência Artificial (PBIA)</strong> para garantir que os objetivos do país, como o desenvolvimento social e econômico, sejam atingidos. Ele aponta para a falta de clareza em termos técnicos no projeto, como a distinção entre "sistemas" e "modelos" de IA.</p>
+  <p><strong>Classificação de Riscos e a Cadeia de Valor da IA</strong></p>
+  <p>A discussão sobre a regulamentação levanta pontos importantes sobre a classificação de riscos. A OpenAI sugere que as categorias de risco devem ser mais técnicas e alinhadas com legislações internacionais. O executivo argumenta que a tecnologia é complexa e que a regulação deve considerar toda a <strong>cadeia de valor da IA</strong>, desde o desenvolvimento do modelo até a implementação da solução final.</p>
+  <p>Andrade rebate a ideia de que a regulação é inerentemente "pró" ou "contra" inovação, afirmando que é possível criar regras que protejam direitos e mitiguem riscos, ao mesmo tempo que permitem o avanço tecnológico. Ele ressalta que o Brasil possui um grande grupo de desenvolvedores, uma característica que pode ser uma grande vantagem competitiva.</p>
+  <p><strong>Diálogo com a Indústria e o Futuro da Tecnologia</strong></p>
+  <p>A OpenAI está em conversas com veículos de imprensa no Brasil para firmar parcerias de <strong>licenciamento de conteúdo</strong>, nos moldes do que já foi feito em outros países. O objetivo é remunerar as empresas de mídia e, ao mesmo tempo, oferecer resumos de notícias aos usuários do ChatGPT, com links para as matérias completas.</p>
+  <p>Sobre o uso da IA para desinformação, a empresa afirma ter mecanismos de segurança e salvaguardas que impedem que seus modelos gerem conteúdo que vá contra suas regras. A OpenAI também está atenta ao uso de seus sistemas em períodos eleitorais, com medidas para evitar a manipulação de imagens de figuras públicas.</p>
+  <p>O debate sobre a <strong>Inteligência Artificial Geral (AGI)</strong>, uma forma de IA tão inteligente quanto um ser humano, continua sendo um tópico central para a empresa. A definição de AGI é um tema em constante evolução, e a OpenAI busca garantir que a tecnologia seja útil e acessível a todos, visando não apenas o desenvolvimento de indústrias, mas também o benefício social.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://www.orfonline.org/public/uploads/posts/image/1739193978_img-china-tech.jpg" alt="China Investe Pesado para Liderar a Corrida da IA">
+  </div>
+  <h3>China Investe Pesado para Liderar a Corrida da IA</h3>
+  <p>A <strong>China</strong> está aplicando uma estratégia de política industrial, semelhante à que usou para dominar os mercados de <strong>veículos elétricos</strong> e <strong>energia solar</strong>, para se tornar uma superpotência em <strong>inteligência artificial (IA)</strong>. O governo chinês tem canalizado bilhões de dólares para impulsionar suas empresas de tecnologia, visando diminuir a diferença em relação aos <strong>Estados Unidos</strong>.</p>
+  <p>Essa abordagem envolve financiar toda a <strong>cadeia de valor da IA</strong>, incluindo <strong>chips</strong>, <strong>centros de dados</strong> e o desenvolvimento de <strong>talentos</strong>. Enquanto os EUA têm restringido a venda de chips avançados para a China, empresas chinesas como a <strong>Huawei</strong> têm trabalhado em alternativas.</p>
+  <p><strong>A Estratégia de "Apoio Estatal" de Pequim</strong></p>
+  <p>O governo chinês tem um papel central no financiamento da infraestrutura e do hardware de IA, como <strong>data centers</strong> e <strong>semicondutores</strong>. Além disso, o país estabeleceu uma rede de laboratórios para pesquisa avançada em IA, frequentemente em colaboração com grandes empresas como <strong>Alibaba</strong> e <strong>ByteDance</strong>.</p>
+  <p>Bancos e governos locais também concedem empréstimos e subsídios para centenas de startups. Em <strong>abril</strong>, o governo anunciou a alocação de <strong>US$ 8,5 bilhões</strong> para startups de IA. Diferentes cidades, como <strong>Hangzhou</strong>, transformaram bairros inteiros em incubadoras de startups, atraindo talentos com incentivos competitivos.</p>
+  <p>Para garantir que os sistemas de IA estejam em conformidade com as políticas de controle de informações, o governo chinês criou conjuntos de dados aprovados, como um "<strong>corpus de valores dominantes</strong>", para o treinamento de modelos.</p>
+  <p><strong>Aumento do Software de IA de Código Aberto</strong></p>
+  <p>Empresas chinesas estão adotando uma estratégia de <strong>código aberto</strong> para acelerar seu desenvolvimento e competir com rivais do <strong>Vale do Silício</strong>. Empresas como <strong>Alibaba</strong>, <strong>Huawei</strong> e <strong>Baidu</strong> têm lançado seus próprios sistemas de código aberto, tornando mais fácil para desenvolvedores globais criarem suas próprias soluções.</p>
+  <p>Essa abordagem democratiza o acesso à tecnologia e é vista como uma forma de "<strong>poder suave</strong>" tecnológico, que pode atrair mais engenheiros em todo o mundo. A <strong>OpenAI</strong>, no entanto, alertou que essa estratégia poderia permitir que empresas chinesas estabeleçam padrões para o uso da tecnologia em mercados globais, competindo diretamente com a abordagem mais "democrática" do Vale do Silício.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/inteligencia-artificial-1024x629.jpg" alt="Austrália Debate Regulação da IA para Proteger Direitos Humanos">
+  </div>
+  <h3>Austrália Debate Regulação da IA para Proteger Direitos Humanos</h3>
+  <p>A <strong>Austrália</strong> se junta à discussão global sobre a necessidade de regulamentar a <strong>inteligência artificial (IA)</strong>. A comissária de direitos humanos do país, <strong>Lorraine Finlay</strong>, alertou que a falta de regras claras pode reforçar preconceitos como <strong>racismo</strong> e <strong>sexismo</strong>, que já existem na sociedade. Ela defende a criação de uma lei específica para IA, que complemente as normas de privacidade existentes e preveja testes rigorosos para identificar vieses.</p>
+  <p>A preocupação é compartilhada por outros especialistas e autoridades, que pedem supervisão humana, transparência e uso de dados representativos para evitar injustiças. A senadora <strong>Michelle Ananda-Rajah</strong>, por exemplo, destaca a importância de treinar modelos de IA com <strong>dados australianos</strong> para que preconceitos internacionais não sejam importados. O debate ganhou força em meio a uma cúpula econômica do governo, onde se discute como a IA pode impulsionar a produtividade.</p>
+  <p><strong>IA e o Risco de Preconceitos</strong></p>
+  <p>Um dos principais riscos apontados é a <strong>opacidade dos dados</strong> usados para treinar os sistemas de IA. Sem transparência, é difícil identificar e corrigir vieses. A comissária Finlay ressalta que o perigo é que esses preconceitos se tornem tão enraizados que se tornem invisíveis.</p>
+  <p>Estudos já documentaram casos de discriminação em sistemas de IA na Austrália, como ferramentas de entrevista automatizadas que prejudicam candidatos com <strong>sotaque</strong> ou <strong>deficiência</strong>. Isso reforça a tese de que modelos criados no exterior podem não se alinhar com a realidade australiana. Sindicatos, artistas e o setor de mídia também estão em alerta sobre riscos de <strong>violação de direitos autorais</strong> e de <strong>privacidade</strong>. O debate destaca a urgência de uma regulamentação que garanta que a inovação tecnológica não comprometa os direitos humanos.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/07/deepseek_china-1920x1080.jpg" alt="Atraso da DeepSeek Levanta Dúvidas sobre Chips Chineses">
+  </div>
+  <h3>Atraso da DeepSeek Levanta Dúvidas sobre Chips Chineses</h3>
+  <p>A empresa chinesa de <strong>inteligência artificial DeepSeek</strong> adiou o lançamento de sua nova versão, a <strong>IA R2</strong>, devido a dificuldades técnicas durante o treinamento do modelo. O atraso destaca o dilema que as empresas de tecnologia na <strong>China</strong> enfrentam: usar chips de fabricação nacional, como os da <strong>Huawei</strong>, ou voltar a depender de produtos ocidentais, como os da <strong>Nvidia</strong>, que agora podem ser vendidos para a China sob licença dos <strong>EUA</strong>.</p>
+  <p>O governo chinês tem incentivado o uso de <strong>semicondutores locais</strong>. No caso da DeepSeek, o modelo R2 foi treinado com processadores <strong>Ascend da Huawei</strong>, por incentivo de <strong>Pequim</strong>. No entanto, os desafios técnicos encontrados no processo reforçam as preocupações sobre a capacidade da indústria chinesa de competir com as tecnologias mais avançadas dos EUA. O lançamento da nova IA, que se tornou um marco na competição com a <strong>OpenAI</strong>, é aguardado nas próximas semanas.</p>
+  <p><strong>DeepSeek: Inovação e Acessibilidade</strong></p>
+  <p>A <strong>DeepSeek</strong> se destacou globalmente por oferecer um modelo de IA de alto desempenho a um custo de desenvolvimento significativamente baixo. Com um custo de cerca de <strong>US$ 6 milhões</strong> para treinamento, a tecnologia chinesa se tornou uma ameaça aos líderes do setor, cujos modelos, como o <strong>Llama 3.1 da Meta</strong>, custaram mais de <strong>US$ 60 milhões</strong>.</p>
+  <p>A empresa utiliza estratégias inovadoras para otimizar recursos, como o <strong>aprendizado por reforço</strong>, que permite aos modelos aprender por tentativa e erro. Além disso, a DeepSeek ativa apenas uma fração dos parâmetros para tarefas específicas, economizando poder computacional. A empresa também adota um modelo <strong>parcialmente aberto</strong>, o que facilita a colaboração com pesquisadores e democratiza o acesso a algoritmos avançados.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2024/07/shutterstock_2425904837-e1722860140374-1920x1080.jpg" alt="Nvidia e Google Lançam Ferramentas de IA para Robótica e Mundos Virtuais">
+  </div>
+  <h3>Nvidia e Google Lançam Ferramentas de IA para Robótica e Mundos Virtuais</h3>
+  <p>A <strong>Nvidia</strong> lançou um novo conjunto de modelos, bibliotecas e infraestrutura de <strong>inteligência artificial (IA)</strong> para desenvolvedores de robótica. Os lançamentos buscam impulsionar a autonomia de robôs e sistemas de IA. O destaque é o modelo <strong>Cosmos Reason</strong>, projetado para permitir que máquinas "raciocinem" sobre o ambiente e planejem ações de forma mais assertiva.</p>
+  <p>Outras novidades incluem o <strong>Cosmos Transfer-2</strong>, que acelera a criação de dados sintéticos para treinar robôs, e uma versão mais compacta do mesmo modelo, otimizada para velocidade. A empresa também apresentou bibliotecas de <strong>reconstrução neural</strong>, que recriam o mundo real em <strong>3D</strong>, e atualizações no <strong>Omniverse SDK</strong>, uma ferramenta para criar e testar ambientes virtuais complexos.</p>
+  <p>Essas inovações marcam a aposta da Nvidia na robótica como um novo motor de demanda para suas <strong>GPUs de IA</strong>, reforçando sua posição como fornecedora central de tecnologia para o mercado de máquinas inteligentes.</p>
+  <p><strong>Google DeepMind Avança em Mundos Virtuais 3D</strong></p>
+  <p>O <strong>Google DeepMind</strong> também está fazendo progressos no campo da IA com o lançamento do <strong>Genie 3</strong>, a nova versão de um modelo capaz de criar "mundos" 3D interativos e em tempo real. O modelo promete melhorias como maior tempo de interação e capacidade de lembrar a posição de objetos, mesmo quando o usuário não está olhando diretamente.</p>
+  <p>No entanto, o <strong>Genie 3</strong> não está disponível para o público. Ele será lançado como uma "prévia limitada para pesquisa", acessível apenas a um pequeno grupo de acadêmicos e criadores. A estratégia do Google é permitir que especialistas avaliem os riscos e encontrem formas de mitigá-los antes de um possível lançamento mais amplo.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2024/12/shutterstock_2366323229-scaled-e1739026609928-1920x1080.jpg" alt="Sam Altman Questiona a Definição de IA Geral">
+  </div>
+  <h3>Sam Altman Questiona a Definição de IA Geral</h3>
+  <p>O conceito de <strong>Inteligência Artificial Geral (AGI)</strong>, que representa uma tecnologia com capacidades cognitivas similares ou até superiores às humanas, é um dos principais objetivos na corrida global de IA. No entanto, segundo <strong>Sam Altman</strong>, CEO da <strong>OpenAI</strong>, a rápida evolução da tecnologia está gerando um problema de definição.</p>
+  <p>Altman argumenta que existem muitas definições concorrentes para a AGI, o que torna o conceito difícil de ser discutido de forma objetiva. Ele sugere que é mais útil focar nos níveis de progresso da tecnologia e nas capacidades específicas que ela já possui ou pode vir a ter, em vez de debater um conceito teórico.</p>
+  <p><strong>Avanços Práticos e Proximidade da AGI</strong></p>
+  <p>Apesar de suas ressalvas sobre a definição, Altman continua acreditando que a AGI está cada vez mais próxima. Ele prevê avanços significativos nos próximos anos, com a IA contribuindo para <strong>descobertas científicas</strong> e <strong>novos teoremas matemáticos</strong>.</p>
+  <p>A discussão sobre a AGI levanta questões importantes, incluindo temores sobre o controle de uma tecnologia com capacidades superiores às humanas. Contudo, a visão de Altman sugere que o foco deve estar no progresso prático da tecnologia e em como ela pode ser utilizada para gerar inovações em áreas específicas.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://t.ctcdn.com.br/iu7HdqxftsE5Z6q6RuVbbPrrIjU=/1024x576/smart/i1031477.png" alt="Google Lança Gemini 2.5 Pro e Flash Lite">
+  </div>
+  <h3>GPT-5 e Gemini 2.5: Novas IAs da OpenAI e Google Têm Diferenças-Chave</h3>
+  <p>O cenário da <strong>inteligência artificial</strong> está cada vez mais competitivo com a chegada de novos modelos avançados. O recém-lançado <strong>GPT-5</strong>, da <strong>OpenAI</strong>, e o <strong>Gemini 2.5</strong>, do <strong>Google</strong>, trazem inovações significativas, mas com abordagens distintas em áreas-chave. A principal diferença entre os dois modelos reside no seu foco: o GPT-5 se destaca pela <strong>precisão e qualidade na escrita</strong>, enquanto o Gemini 2.5 se sobressai pela sua alta <strong>capacidade de raciocínio</strong>.</p>
+  <p><strong>Comparativo entre os Modelos:</strong></p>
+  <ul>
+    <li><strong>Raciocínio e Seleção:</strong> O GPT-5 seleciona automaticamente o modelo mais adequado para cada comando. O Gemini 2.5, por outro lado, usa um "<strong>thinking model</strong>" que permite a cada variante de IA ter sua própria capacidade de raciocínio, otimizando o uso para cada tarefa.</li>
+    <li><strong>Capacidade Multimodal:</strong> O GPT-5 tem limites de entrada de até <strong>272 mil tokens</strong> para respostas em texto e imagem, enquanto o Gemini 2.5 oferece uma janela de contexto maior, de até <strong>1 milhão de tokens</strong>, processando texto e imagem de forma mais ampla.</li>
+    <li><strong>Desempenho em Programação:</strong> O GPT-5 é considerado o melhor da OpenAI para codificação, capaz de resolver tarefas complexas de <strong>front-end</strong>. No entanto, o <strong>Gemini 2.5 Pro</strong>, uma de suas versões, já liderou testes de codificação, destacando-se por sua capacidade de criar aplicativos interativos com o recurso <strong>Deepthink</strong>.</li>
+    <li><strong>Integração com Ecossistemas:</strong> O Gemini 2.5 já está integrado a diversas plataformas do Google, como <strong>Google AI Studio</strong>, <strong>Vertex AI</strong> e ferramentas como <strong>Docs</strong> e <strong>Gmail</strong>. O GPT-5, por enquanto, só está disponível no chatbot oficial da OpenAI, sem integração com outros serviços.</li>
+  </ul>
+  <p>O <strong>GPT-5</strong> já está disponível para usuários gratuitos e assinantes do <strong>ChatGPT</strong>.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://t.ctcdn.com.br/Nv8HfUb9sWBWMwLmXOQmb1qEU-o=/1024x576/smart/i1026481.png" alt="OpenAI Retorna com GPT-4o Após Falha no GPT-5">
+  </div>
+  <h3>OpenAI Retorna com GPT-4o Após Falha no GPT-5</h3>
+  <p>Em um movimento incomum, a <strong>OpenAI</strong> reativou o acesso ao modelo <strong>GPT-4o</strong> para usuários do <strong>ChatGPT Plus e Team</strong>. A decisão foi tomada depois que o recém-lançado <strong>GPT-5</strong> apresentou falhas, fazendo-o parecer menos eficiente.</p>
+  <p>O <strong>CEO da OpenAI, Sam Altman</strong>, explicou que um problema no sistema de seleção automática, que escolhe o modelo mais adequado para cada tarefa, fez com que o GPT-5 não tivesse um bom desempenho. A falha foi corrigida, e o modelo antigo, o <strong>GPT-4o</strong>, foi temporariamente reintroduzido para que os usuários pudessem ter uma experiência mais consistente.</p>
+  <p><strong>Novidades na Experiência do Usuário</strong></p>
+  <p>Além de trazer de volta o GPT-4o, a OpenAI anunciou outras mudanças para melhorar a experiência do usuário. O limite de mensagens para o <strong>GPT-5</strong> foi temporariamente aumentado para <strong>100 mensagens a cada três horas</strong>, para permitir que os usuários testem o novo modelo de forma mais ampla.</p>
+  <p>A empresa também tornou mais transparente qual modelo de IA está respondendo a cada comando e fez ajustes na interface do usuário para facilitar a ativação manual de diferentes "raciocínios" da IA. A implementação dessas mudanças é um processo gradual devido ao aumento no tráfego da plataforma, que praticamente dobrou após o lançamento do GPT-5.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/06/amazon-1920x1080.jpg" alt="Amazon Adota IA Neurossimbólica para Otimizar Sistemas">
+  </div>
+  <h3>Amazon Adota IA Neurossimbólica para Otimizar Sistemas</h3>
+  <p>A <strong>Amazon</strong> está investindo em um modelo híbrido de <strong>inteligência artificial</strong> conhecido como <strong>IA neurossimbólica</strong>. Essa abordagem inovadora combina <strong>redes neurais</strong>, que são eficazes no reconhecimento de padrões e na análise de dados, com o <strong>raciocínio simbólico</strong>, que utiliza lógica e códigos para resolver problemas.</p>
+  <p>A empresa acredita que essa tecnologia é uma solução para o problema das "<strong>alucinações</strong>" em IAs, onde modelos de linguagem, como o <strong>ChatGPT</strong>, podem gerar informações incorretas com confiança. A IA neurossimbólica busca trazer mais <strong>precisão e verificabilidade</strong> às respostas, já que pode formalizar verdades matemáticas e lógicas. Essa combinação não apenas melhora a acurácia, mas também pode reduzir custos computacionais.</p>
+  <p><strong>Aplicações Práticas na Amazon</strong></p>
+  <p>A nova tecnologia já está sendo implementada em diferentes áreas da Amazon:</p>
+  <ul>
+    <li><strong>Logística:</strong> Robôs como o <strong>Vulcan</strong> usam o raciocínio automatizado para otimizar o empacotamento de caixas em centros de distribuição, com uma velocidade próxima à de trabalhadores humanos.</li>
+    <li><strong>Assistente de Compras:</strong> O assistente virtual <strong>Rufus</strong> usa a IA neurossimbólica para tornar suas respostas mais relevantes e precisas, combinando o entendimento de linguagem com a lógica para reduzir erros.</li>
+    <li><strong>Verificação de Dados:</strong> O recurso <strong>Automated Reasoning Checks</strong>, lançado pela empresa, tem a capacidade de reduzir alucinações de IA e identificar respostas corretas com até <strong>99% de precisão</strong>.</li>
+  </ul>
+  <p>A aposta da Amazon na IA neurossimbólica marca um novo capítulo no debate entre o <strong>aprendizado profundo</strong> e a <strong>IA clássica</strong>, sugerindo que o futuro da tecnologia pode estar em sistemas híbridos que unem o melhor dos dois mundos.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/04/chatbot-deep-gemini-avanada-1920x1080.png" alt="Gemini, do Google, Ganha Nova Função de Memória">
+  </div>
+  <h3>Gemini, do Google, Ganha Nova Função de Memória</h3>
+  <p>O <strong>Google</strong> lançou uma nova função de <strong>memória</strong> para o <strong>Gemini</strong>, seu modelo de <strong>inteligência artificial</strong>. O chatbot agora pode se lembrar automaticamente de conversas passadas e de "detalhes e preferências importantes" para personalizar respostas futuras. Por padrão, a função virá ativada, mas os usuários podem desativá-la nas configurações do chatbot.</p>
+  <p>A novidade é um avanço em relação a um recurso lançado em <strong>2024</strong>, que exigia que o usuário desse um comando específico para salvar as informações. O Google afirma que o objetivo é criar um assistente de IA mais pessoal, mas com controles simples que permitam ao usuário decidir quais informações serão mantidas.</p>
+  <p>Para dar mais controle sobre a privacidade, a empresa também está implementando o modo de "<strong>conversas temporárias</strong>", em que as interações não são salvas no histórico, não são usadas para personalizar futuras respostas ou para treinar a IA, e são apagadas após <strong>72 horas</strong>. Este recurso é ideal para perguntas mais privadas ou que não exijam referências futuras.</p>
+  <p><strong>Gemini Se Torna "Tutor Digital" para Estudantes</strong></p>
+  <p>Em uma iniciativa focada em <strong>educação</strong>, o Google anunciou o "<strong>Aprendizado Guiado</strong>" no Gemini. A ferramenta transforma a IA em um tutor digital que oferece explicações passo a passo e se adapta ao estilo de cada usuário.</p>
+  <p>O recurso é <strong>multimodal</strong> e pode incorporar automaticamente vídeos do <strong>YouTube</strong>, imagens, diagramas e quizzes interativos para reforçar o aprendizado. A IA também consegue criar guias de estudo personalizados e <strong>flashcards</strong> com base em materiais escolares. Como parte do lançamento, o Google está oferecendo acesso gratuito de um ano ao plano <strong>AI Pro</strong> para estudantes em alguns países, incluindo o <strong>Brasil</strong>.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://s2-g1.glbimg.com/gRbp0G3bTcwjfPU9T6Nnz8KY3DY=/0x0:3257x2172/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2025/m/a/RhsDpVSxahgogE30rvKg/chatgpt.jpg" alt="Brasil Entre os Maiores Usuários de ChatGPT">
+  </div>
+  <h3>Brasil Entre os Maiores Usuários de ChatGPT</h3>
+  <p>O <strong>Brasil</strong> se destaca como um dos principais mercados para a <strong>inteligência artificial da OpenAI</strong>. De acordo com o primeiro estudo da empresa focado no país, os brasileiros estão entre os três que mais utilizam o <strong>ChatGPT</strong> semanalmente, atrás apenas de <strong>Estados Unidos</strong> e <strong>Índia</strong>.</p>
+  <p>Os dados revelam que são enviadas cerca de <strong>140 milhões de mensagens por dia</strong> na plataforma no Brasil, um número que contribui para o total de mais de <strong>2 bilhões de comandos diários</strong> globalmente. O estudo aponta que os principais usos do ChatGPT no país são para <strong>redação e comunicação</strong>, <strong>aprendizado e capacitação</strong>, e <strong>programação</strong>.</p>
+  <p><strong>O Perfil do Usuário e o Futuro da IA no Brasil</strong></p>
+  <p>O estudo da <strong>OpenAI</strong> mostra que os usuários brasileiros do ChatGPT são, em sua maioria, <strong>jovens</strong>, com <strong>60%</strong> deles entre <strong>18 e 34 anos</strong>. Esse dado leva a empresa a acreditar que a nova geração está se tornando "<strong>nativos da IA</strong>", incorporando a tecnologia em suas rotinas de estudo e trabalho.</p>
+  <p>O Brasil também se destaca na <strong>América Latina</strong> por ter o maior número de <strong>talentos em inteligência artificial</strong>. O país ocupa o <strong>segundo lugar mundial</strong> em desenvolvedores que utilizam a <strong>API da OpenAI</strong>, o que sinaliza um ecossistema de inovação em crescimento.</p>
+  <p>Esses números reforçam o potencial do Brasil na área de tecnologia, com a população não apenas adotando a IA, mas também contribuindo para o seu desenvolvimento. O crescimento expressivo no uso da plataforma no país indica uma relação sólida e crescente entre os usuários brasileiros e a tecnologia de IA.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/gramado-1-1920x1080.jpg" alt="Festival de Cinema de Gramado Terá Categoria para Filmes Feitos com IA">
+  </div>
+  <h3>Festival de Cinema de Gramado Terá Categoria para Filmes Feitos com IA</h3>
+  <p>Pela primeira vez em sua história, o tradicional <strong>Festival de Cinema de Gramado</strong> vai premiar filmes gerados com o uso de <strong>inteligência artificial</strong>. A iniciativa, que está em sua <strong>53ª edição</strong>, busca abrir um debate sobre o papel da IA no futuro da produção audiovisual, questionando temas como autoria, ética e linguagem.</p>
+  <p>A nova categoria, que recebeu <strong>52 inscrições</strong>, selecionou quatro filmes para a competição. As obras estão disponíveis para votação popular no site do festival, e o vencedor será anunciado no final do evento. O prêmio para o ganhador será uma verba de <strong>R$ 20 mil</strong> em serviços de pós-produção.</p>
+  <p><strong>Legitimidade da Premiação Gerou Debate</strong></p>
+  <p>A inclusão de uma categoria para filmes criados com IA causou polêmica nas redes sociais, levantando questões sobre a legitimidade de premiar esse tipo de conteúdo. No entanto, os organizadores do evento defendem a iniciativa, afirmando que o objetivo é explorar onde a IA pode ser útil no processo de produção de filmes.</p>
+  <p>A organizadora do festival ressalta que o evento tem um histórico de abraçar novas tecnologias, como a inclusão da mostra de filmes em <strong>realidade virtual (VR)</strong>. A decisão de incluir a IA na programação reflete a crescente presença da tecnologia na indústria do entretenimento e busca criar um espaço para discussão sobre seu impacto e potencial.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/Captura-de-tela-2025-08-11-154637-1920x1080.png" alt="Google Finance Lança Ferramentas com IA">
+  </div>
+  <h3>Google Finance Lança Ferramentas com IA</h3>
+  <p>O <strong>Google</strong> está introduzindo um novo design para o <strong>Google Finance</strong>, sua plataforma de finanças, que agora integra a <strong>inteligência artificial</strong> para oferecer análises mais aprofundadas e insights inovadores. O objetivo é aumentar a competitividade com outras plataformas financeiras que também estão usando IA e desencorajar investidores de buscar informações em chatbots genéricos como o <strong>ChatGPT</strong>.</p>
+  <p>A novidade, que está sendo testada inicialmente nos <strong>Estados Unidos</strong>, permite que os usuários alternem entre o <strong>design clássico</strong> e o <strong>novo</strong>.</p>
+  <p><strong>Novos Recursos e Capacidades da Plataforma</strong></p>
+  <p>A atualização do Google Finance inclui três recursos principais:</p>
+  <ul>
+    <li><strong>Respostas com IA:</strong> Os usuários agora podem fazer perguntas detalhadas sobre o mercado financeiro e receber respostas abrangentes geradas por IA, com links para sites relevantes. A tecnologia permite que perguntas complexas sejam respondidas de uma só vez, em vez de exigir buscas individuais.</li>
+    <li><strong>Gráficos Avançados:</strong> A plataforma conta com ferramentas de gráficos que permitem visualizar mais do que o simples desempenho de ativos. É possível, por exemplo, visualizar <strong>indicadores técnicos</strong> e personalizar a exibição com <strong>gráficos de velas</strong>.</li>
+    <li><strong>Dados e Notícias em Tempo Real:</strong> Um novo feed de notícias ao vivo compila as manchetes mais recentes do mercado. Os usuários também poderão explorar mais tipos de dados, como <strong>commodities</strong> e <strong>criptomoedas</strong>.</li>
+  </ul>
+  <p>Essas inovações se somam à implementação de visualizações gráficas interativas já disponíveis no modo <strong>IA do Google</strong>, que permite aos usuários comparar o desempenho de empresas e fundos de forma personalizada. A empresa ressalta que seus modelos avançados de IA usam raciocínio para entender a intenção das perguntas, buscar informações históricas e em tempo real e, então, apresentar os dados de forma inteligente.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/mouse-teclado-1024x684.jpg" alt="Lenovo Aposta em Futuro Sem Mouse e Teclado com IA">
+  </div>
+  <h3>Lenovo Aposta em Futuro Sem Mouse e Teclado com IA</h3>
+  <p>A <strong>Lenovo</strong> acredita que a <strong>inteligência artificial</strong> tem o potencial de revolucionar a maneira como interagimos com os computadores. Segundo o presidente da empresa no <strong>Brasil</strong>, <strong>Ricardo Bloj</strong>, os periféricos tradicionais, como o <strong>mouse</strong> e o <strong>teclado</strong>, podem se tornar obsoletos no futuro, à medida que a IA se popularizar.</p>
+  <p>A previsão é que a principal forma de interação com as máquinas se dê por meio da <strong>voz</strong>, com a IA interpretando as necessidades dos usuários e executando os comandos. Essa mudança de paradigma exigiria que as pessoas fossem "reeducadas tecnologicamente" para se comunicarem com os dispositivos de uma nova maneira, eliminando a necessidade de digitar ou usar periféricos de navegação.</p>
+  <p><strong>Iniciativas da Lenovo no Campo da IA</strong></p>
+  <p>A Lenovo já está investindo para tornar essa visão uma realidade. Desde <strong>2024</strong>, a empresa tem integrado <strong>Unidades de Processamento Neural (NPUs)</strong> diretamente nos notebooks, que são componentes de hardware projetados para acelerar tarefas de IA, como o processamento de <strong>linguagem natural</strong>.</p>
+  <p>Essa abordagem <strong>híbrida</strong>, que combina hardware e software, permite que os dispositivos executem tarefas de IA de forma mais rápida e eficiente, com menor consumo de energia. A aposta da Lenovo na IA se alinha com o movimento de outras grandes empresas de tecnologia, como a <strong>Microsoft</strong>, que também preveem um futuro onde a IA transformará fundamentalmente a experiência de uso de computadores.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2024/04/IA-no-mercado-financeiro-1024x576.png" alt="Investimentos em IA Ainda Não Trazem Retornos Esperados">
+  </div>
+  <h3>Investimentos em IA Ainda Não Trazem Retornos Esperados</h3>
+  <p>Apesar de quase <strong>80% das empresas</strong> já utilizarem <strong>inteligência artificial (IA) generativa</strong>, uma pesquisa da <strong>McKinsey & Company</strong> revela que a maioria ainda não percebeu um impacto significativo em seus resultados financeiros. Este fenômeno é comparado ao "<strong>paradoxo da produtividade</strong>" da era dos computadores, em que grandes investimentos em tecnologia não geraram ganhos imediatos de eficiência.</p>
+  <p>Os gastos com IA devem atingir <strong>US$ 61,9 bilhões</strong> este ano, mas <strong>42% dos projetos-piloto</strong> foram descontinuados em <strong>2024</strong>. As razões apontadas para a falta de retorno incluem resistência de funcionários e a ausência de habilidades necessárias. Especialistas sugerem que a tecnologia precisa passar por um período de "<strong>desilusão</strong>" antes de se consolidar e entregar o potencial prometido.</p>
+  <p><strong>Resultados Pontuais e o Futuro da Transformação</strong></p>
+  <p>A pesquisa mostra que, embora a transformação completa ainda leve anos, algumas empresas já colhem resultados pontuais. A <strong>USAA</strong>, por exemplo, melhorou o atendimento ao cliente com um assistente de IA para seus funcionários. A <strong>Johnson Controls</strong> reduziu o tempo de reparo de máquinas com um aplicativo de IA. No <strong>JPMorgan Chase</strong>, assistentes de IA ajudam <strong>200 mil funcionários</strong> a economizar até <strong>quatro horas semanais</strong> em tarefas como a elaboração de relatórios.</p>
+  <p>O sucesso da IA depende de testes contínuos e de uma integração cuidadosa nos processos de negócio. Segundo especialistas, a "<strong>potência tecnológica</strong>" por si só não garante uma transformação imediata. O impacto real da IA será percebido com o tempo, à medida que as empresas aprendem a aplicá-la de forma eficaz e a superam obstáculos internos e de aprendizado gradual.</p>
+</article>
+  </section>
+
+  <section id="inovacao-tecnologica" class="news-section">
+    <h2>INOVAÇÃO TECNOLÓGICA</h2>
+    <article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/06/Destaque-Computacao-quantica-2025-1920x1080.jpg" alt="Google e IBM Avançam na Computação Quântica">
+  </div>
+  <h3>Google e IBM Avançam na Computação Quântica</h3>
+  <p><strong>Google e IBM</strong>, duas das principais empresas no campo da <strong>computação quântica</strong>, afirmam estar próximas de construir um computador quântico viável e em escala industrial. A computação quântica busca criar máquinas que utilizam <strong>qubits</strong>, uma tecnologia que permite processar informações de forma mais complexa e eficiente do que os bits dos computadores tradicionais.</p>
+  <p>A <strong>IBM</strong>, por exemplo, superou desafios de instabilidade de qubits e acredita que pode ter um computador quântico de larga escala até o final da década. O Google, por sua vez, também se mostra otimista, afirmando que os desafios restantes são superáveis e que sua intenção é alcançar o mesmo objetivo nos próximos <strong>cinco anos</strong>. O Google já demonstrou um chip capaz de se <strong>autocorrigir</strong>, o que representa um passo importante.</p>
+  <p><strong>Desafios e Ceticismo de Especialistas</strong></p>
+  <p>Apesar do otimismo das gigantes da tecnologia, alguns especialistas se mostram céticos. A natureza instável dos <strong>qubits</strong> é um dos principais desafios, pois sua confiabilidade diminui à medida que o número deles aumenta. Outra questão crítica é o alto custo. A IBM demonstrou um chip que reduz as interferências de qubits, mas a complexidade do sistema e o custo de operação tornam sua expansão impraticável no momento.</p>
+  <p>O Google também enfrenta o desafio financeiro e está trabalhando para reduzir os custos dos componentes. A empresa reconhece que há um longo caminho até o valor ideal de <strong>um bilhão de dólares</strong> para um computador quântico em escala completa. Especialistas preveem que pode levar de <strong>15 a 30 anos</strong> para que a tecnologia se torne comercialmente viável.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/rede-quantica-1920x1000.jpg" alt="Brasil Desenvolve Rede de Comunicação Quântica">
+  </div>
+  <h3>Brasil Desenvolve Rede de Comunicação Quântica</h3>
+  <p>O <strong>Brasil</strong> está dando um passo importante no campo da tecnologia quântica com a criação da <strong>Rede Rio Quântica</strong>, um projeto de comunicação experimental que conecta importantes instituições de pesquisa no <strong>Rio de Janeiro</strong>. A iniciativa utiliza <strong>criptografia quântica</strong> para garantir a transmissão segura de dados, um avanço fundamental em segurança digital.</p>
+  <p>A rede conecta a <strong>UFRJ</strong>, a <strong>PUC-Rio</strong> e o <strong>CBPF</strong> por cerca de <strong>21 km de fibra óptica</strong>. Além disso, um feixe de laser atravessa a <strong>Baía de Guanabara</strong> para ligar a <strong>UFF (em Niterói)</strong> ao CBPF. O projeto utiliza <strong>qubits</strong>, unidades que podem representar simultaneamente <strong>0 e 1</strong>, o que permite a criação de chaves criptográficas praticamente invioláveis.</p>
+  <p><strong>Desafios e Futuro da Tecnologia</strong></p>
+  <p>Apesar dos avanços, a implementação da rede enfrenta desafios. O enlace aéreo, que utiliza um feixe laser, é vulnerável a condições climáticas, como neblina e chuva, que podem comprometer a transmissão. Além disso, a conexão via fibra óptica entre algumas instituições ainda precisa de ajustes para funcionar com a força de sinal ideal.</p>
+  <p>O projeto é financiado por diversas agências, como <strong>FAPESP</strong> e <strong>FINEP</strong>, que também destinaram <strong>R$ 23 milhões</strong> para a construção de um laboratório de tecnologias quânticas no <strong>CBPF</strong>. Este laboratório será crucial para o desenvolvimento de protótipos de <strong>chips quânticos</strong> e componentes eletrônicos, o que pode solidificar a posição do Brasil no cenário da computação e comunicação quântica.</p>
+  <p>O Brasil se junta a um grupo seleto de países, como a <strong>China</strong>, que já possui uma extensa rede quântica, e a potências como os <strong>Estados Unidos</strong> e a <strong>Europa</strong>, que buscam desenvolver a chamada "<strong>internet quântica</strong>" para revolucionar a transmissão de dados. Outros projetos no país, em <strong>Recife</strong> e <strong>São Paulo</strong>, também buscam criar redes similares.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://revistaforum.com.br/u/fotografias/m/2025/8/13/f960x540-156363_230438_5050.jpg" alt="Cientistas Chineses Quebram Recorde em Computação Quântica">
+  </div>
+  <h3>Cientistas Chineses Quebram Recorde em Computação Quântica</h3>
+  <p>Pesquisadores chineses da <strong>Universidade de Ciência e Tecnologia da China (USTC)</strong> anunciaram um avanço notável na <strong>computação quântica</strong> baseada em átomos. A equipe conseguiu controlar e organizar mais de <strong>2.000 átomos de rubídio</strong> em padrões perfeitos em apenas <strong>60 milissegundos</strong>, um marco que supera em dez vezes o tamanho das matrizes obtidas anteriormente.</p>
+  <p>O feito foi alcançado com a ajuda de <strong>inteligência artificial (IA)</strong> e um <strong>modulador espacial de luz de alta velocidade</strong>, que permitiu moldar feixes de laser para capturar e reposicionar todos os átomos simultaneamente. Cada átomo atua como um <strong>qubit</strong>, a unidade fundamental da informação quântica, e a capacidade de mover todos eles de uma só vez abre o caminho para a criação de sistemas quânticos muito maiores.</p>
+  <p><strong>Próximos Desafios e o Futuro dos Qubits</strong></p>
+  <p>A computação quântica baseada em <strong>átomos neutros</strong> é promissora por sua estabilidade e escalabilidade, mas vinha sendo limitada pela lentidão do processo de movimentação individual dos átomos. A nova técnica chinesa resolveu este problema, atingindo níveis de precisão comparáveis aos líderes mundiais, como <strong>Harvard</strong>.</p>
+  <p>A equipe aponta que os principais desafios a serem superados agora são a dificuldade de mover átomos entre diferentes <strong>camadas tridimensionais</strong> e as limitações de potência e precisão dos lasers. Se esses obstáculos forem superados, a nova técnica poderá permitir a construção de computadores quânticos confiáveis com dezenas de milhares de qubits, o que poderia transformar a tecnologia para sempre.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/brain-1920x1080.jpg" alt="Implante Cerebral Decodifica Pensamentos e os Transforma em Texto">
+  </div>
+  <h3>Implante Cerebral Decodifica Pensamentos e os Transforma em Texto</h3>
+  <p>Pesquisadores da <strong>Universidade de Stanford</strong> desenvolveram um <strong>implante cerebral</strong> experimental que consegue traduzir pensamentos em texto. A tecnologia pode, no futuro, oferecer uma nova forma de comunicação para pessoas que não conseguem falar.</p>
+  <p>O estudo, publicado na revista científica <strong>Cell</strong>, envolveu <strong>quatro participantes</strong> com microeletrodos implantados no <strong>córtex motor</strong>, a área do cérebro responsável pela fala. A partir de sinais neurais, modelos de <strong>inteligência artificial</strong> foram treinados para interpretar a atividade cerebral dos voluntários, que imaginavam ou tentavam pronunciar palavras.</p>
+  <p><strong>Precisão e Segurança da Tecnologia</strong></p>
+  <p>O dispositivo experimental se mostrou capaz de converter pensamentos em texto com até <strong>74% de precisão</strong>. Em um teste de segurança, os cientistas criaram uma "<strong>senha mental</strong>" — uma frase específica que impedia a decodificação de pensamentos sem autorização — com um reconhecimento de acerto de <strong>99%</strong>.</p>
+  <p>A tecnologia faz parte do campo das <strong>Interfaces Cérebro-Computador (ICCs)</strong>, que conectam o sistema nervoso a dispositivos externos e permitem que as pessoas controlem máquinas ou próteses apenas com o pensamento. Outras empresas, como a <strong>Neuralink</strong>, também estão em fase inicial de testes em humanos. O objetivo a longo prazo é tornar a comunicação via ICCs tão natural quanto a fala humana, oferecendo novas esperanças para pessoas com deficiências.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/robos-industriais-1-1920x855.jpg" alt="China Amplia Liderança em Robótica Industrial">
+  </div>
+  <h3>China Amplia Liderança em Robótica Industrial</h3>
+  <p>A <strong>China</strong> continua a expandir o uso de <strong>robôs industriais</strong> em suas fábricas, superando a desaceleração global de instalações. De acordo com a <strong>Federação Internacional de Robótica (IFR)</strong>, o país totalizou <strong>290 mil robôs industriais em 2024</strong>, um aumento de <strong>5%</strong> em relação ao ano anterior. Esse crescimento contrasta com a queda nas instalações em países como <strong>Japão (-7%)</strong>, <strong>Estados Unidos (-9%)</strong> e na <strong>União Europeia (-6%)</strong>.</p>
+  <p>Com mais de <strong>300 mil dispositivos</strong>, a China é responsável por mais da metade dos robôs industriais em operação no mundo. A produção de robôs industriais no país também cresceu significativamente, com um aumento de <strong>35,6%</strong> apenas no primeiro semestre de <strong>2025</strong>.</p>
+  <p><strong>Automação se Expande para Além de Setores Tradicionais</strong></p>
+  <p>O uso de robôs industriais na China não se limita mais aos setores tradicionais, como a fabricação de <strong>eletrônicos</strong> e <strong>automóveis</strong>. As indústrias em geral responderam por <strong>53%</strong> das instalações em 2024, um aumento em comparação com os <strong>38%</strong> registrados em <strong>2020</strong>. Essa diversificação demonstra o esforço de <strong>Pequim</strong> para modernizar sua cadeia de manufatura por meio da automação.</p>
+  <p>Além dos robôs industriais, a China está investindo em <strong>robôs humanoides</strong> e na integração de <strong>inteligência artificial</strong> nos dispositivos. O objetivo é criar máquinas capazes de perceber, aprender e interagir com o ambiente, o que pode fortalecer ainda mais a posição do país como líder em robótica industrial.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/casa-impressa-3D-shutterstock_190039673-1920x1080.jpg" alt="Casas Impressas em 3D: Uma Revolução na Construção Civil?">
+  </div>
+  <h3>Casas Impressas em 3D: Uma Revolução na Construção Civil?</h3>
+  <p>A <strong>impressão 3D</strong> está emergindo como uma tecnologia promissora para transformar a indústria da <strong>construção civil</strong>. O método oferece soluções para desafios como os altos custos, o tempo prolongado das obras e o impacto ambiental. A construção civil é uma das maiores geradoras de <strong>emissões de CO2</strong>, e a impressão 3D surge como uma alternativa mais sustentável.</p>
+  <p>Nos <strong>Estados Unidos</strong>, já existem projetos híbridos de casas impressas em 3D, que combinam o piso térreo impresso com o segundo andar construído de forma tradicional. A promessa é de casas compactas, mais rápidas de construir e resistentes a fatores como <strong>água, mofo, cupins e fogo</strong>.</p>
+  <p><strong>Projetos de Impressão 3D no Brasil</strong></p>
+  <p>Embora ainda esteja em fase inicial, o <strong>Brasil</strong> já está desenvolvendo projetos de casas impressas em 3D. A primeira casa desse tipo no país foi concluída em <strong>2020</strong>, no <strong>Rio Grande do Norte</strong>, como um projeto de graduação universitária.</p>
+  <p>Recentemente, uma construtora em <strong>Caxias do Sul (RS)</strong> utilizou uma impressora gigante para erguer uma casa de <strong>80 m²</strong> em apenas <strong>três dias</strong>. O processo, que usa uma mistura especial de areia, cimento e microconcreto, exigiu apenas um operário para supervisão. Segundo a empresa, a obra teve uma redução de custos de <strong>30%</strong> em comparação com métodos tradicionais e apresentou melhor <strong>isolamento térmico e acústico</strong>. A tecnologia também permite que as instalações elétricas e hidráulicas sejam planejadas no projeto antes da impressão, otimizando o processo.</p>
+  <p><strong>Benefícios do Novo Método</strong></p>
+  <p>O processo de construção de casas impressas em 3D começa com o desenvolvimento da estrutura em um projeto digital, que é depois convertido em instruções para a máquina. A impressora 3D deposita o material em camadas, de baixo para cima, criando a estrutura em poucas horas.</p>
+  <p>Os benefícios do método incluem:</p>
+  <ul>
+    <li>Redução de custos com mão de obra e materiais.</li>
+    <li>Maior rapidez na execução das obras.</li>
+    <li>Menor desperdício de resíduos, diminuindo o impacto ambiental.</li>
+    <li>Possibilidade de designs personalizados e complexos.</li>
+  </ul>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2024/07/Estacao-de-carregamento-para-carros-eletricoa-via-Ernest-Ojeh-Unsplash-1024x683.jpg" alt="Novo Algoritmo Detecta Desgaste em Baterias de Lítio">
+  </div>
+  <h3>Novo Algoritmo Detecta Desgaste em Baterias de Lítio</h3>
+  <p>Pesquisadores da <strong>Universidade da Califórnia</strong>, em <strong>San Diego</strong>, desenvolveram um novo método para prever falhas e aumentar a vida útil das <strong>baterias de lítio</strong>, tecnologia essencial para os <strong>veículos elétricos</strong>. O método, que utiliza um <strong>algoritmo</strong>, analisa imagens geradas por <strong>microscopia eletrônica de varredura (MEV)</strong> para identificar o desgaste "invisível" que pode levar a problemas sérios.</p>
+  <p>O estudo foca na uniformidade do depósito de lítio nos eletrodos da bateria. Quando o lítio se deposita de forma irregular, pode formar estruturas semelhantes a agulhas, chamadas <strong>dendritos</strong>, que perfuram o separador da bateria e causam <strong>curtos-circuitos</strong>. Anteriormente, a avaliação dessa uniformidade era feita de forma inconsistente, mas o novo algoritmo torna a medição mais precisa e confiável.</p>
+  <p><strong>Como Funciona o Algoritmo</strong></p>
+  <p>O algoritmo opera analisando imagens detalhadas dos eletrodos da bateria. Essas imagens são convertidas em <strong>pixels pretos e brancos</strong>, onde os pixels brancos representam os depósitos de lítio. O algoritmo divide a imagem em regiões e calcula o número de pixels brancos em cada uma, criando uma métrica chamada <strong>índice de dispersão (ID)</strong>.</p>
+  <p>Quanto mais próximo de <strong>zero</strong> for o índice de dispersão, mais uniformes são os depósitos de lítio, e maior a vida útil da bateria. Um valor mais alto indica aglomeração e maior risco de falha. A pesquisa demonstrou que o índice de dispersão aumenta com o uso da bateria, e picos no ID podem funcionar como um <strong>alerta precoce</strong> para curtos-circuitos.</p>
+  <p>A principal vantagem do método, segundo os pesquisadores, é seu <strong>custo reduzido</strong>, o que o torna uma ferramenta acessível para que pesquisadores possam otimizar análises e contribuir para a segurança e durabilidade das baterias. O avanço é crucial para o futuro da <strong>mobilidade elétrica</strong> e do <strong>armazenamento de energia</strong>.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://t.ctcdn.com.br/nXFYHsG33Y7bMJY_709_PwQi6BU=/1024x576/smart/i1040907.jpeg" alt="Brasil na Liderança do Desenvolvimento do 6G">
+  </div>
+  <h3>Brasil na Liderança do Desenvolvimento do 6G</h3>
+  <p>O <strong>Brasil</strong> está se posicionando como um protagonista global na pesquisa e no desenvolvimento do <strong>6G</strong>, a próxima geração de internet móvel. A tecnologia, com previsão de chegada para <strong>2030</strong>, promete velocidades até <strong>50 vezes maiores</strong> que o <strong>5G</strong> e a criação da "<strong>internet dos sentidos</strong>", que poderá transmitir experiências sensoriais como tato, olfato e paladar.</p>
+  <p>O <strong>Inatel</strong>, Instituto Nacional de Telecomunicações, que abriga o primeiro curso de engenharia de telecomunicações do Brasil, está na vanguarda dessas pesquisas. O instituto, localizado em <strong>Santa Rita do Sapucaí (MG)</strong>, uma região conhecida como o "<strong>Vale da Eletrônica</strong>", está desenvolvendo soluções inovadoras que garantem ao Brasil um papel ativo nos fóruns globais de tecnologia.</p>
+  <p><strong>Inovações e Desafios para o Futuro da Conectividade</strong></p>
+  <p>O <strong>Laboratório WOCA do Inatel</strong>, focado em redes ópticas e sem fio, apresentou tecnologias que antecipam as características do 6G. Entre elas, destaca-se um protocolo que pode ampliar o alcance do sinal de celular em até <strong>dez vezes</strong>, uma solução eficiente para áreas remotas do país. Outras tecnologias promissoras incluem a transmissão simultânea de <strong>energia e dados</strong> por fibra ótica, a <strong>comunicação por luz visível</strong> e o uso de feixes de laser para transmitir dados pelo ar.</p>
+  <p>Essas inovações buscam não apenas aumentar a velocidade e a cobertura, mas também garantir que o acesso seja mais eficiente e de <strong>baixo custo</strong>, especialmente em áreas rurais. A visão de especialistas é que a <strong>infraestrutura integrada e inteligente</strong> será essencial para suportar o avanço de outras tecnologias, como a <strong>Internet das Coisas (IoT)</strong> e a <strong>inteligência artificial</strong>, garantindo um futuro de conectividade para todos.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2024/05/Deepfake-2-1920x1080.jpg" alt="Tecnologia de Luzes Invisíveis Identifica Deepfakes">
+  </div>
+  <h3>Tecnologia de Luzes Invisíveis Identifica Deepfakes</h3>
+  <p>Pesquisadores da <strong>Universidade Cornell</strong> criaram uma nova tecnologia para combater a crescente onda de <strong>deepfakes</strong> e vídeos manipulados. O novo método, chamado "<strong>iluminação codificada por ruído</strong>" (NCI), usa luzes piscantes invisíveis ao olho humano, mas detectáveis por câmeras comuns, para revelar se um vídeo é real ou foi adulterado.</p>
+  <p>Essa tecnologia funciona de maneira similar a uma <strong>marca-d'água</strong>, mas é embutida diretamente nas fontes de luz que iluminam um ambiente. As luzes emitem uma cintilação codificada que, quando capturada por uma câmera, cria um "<strong>código secreto</strong>" no vídeo. Esse código contém um carimbo de data e hora, provando que o vídeo é autêntico. Se o vídeo for manipulado, o código é alterado, permitindo que o sistema identifique a falsificação facilmente.</p>
+  <p><strong>Simplicidade e Casos de Uso</strong></p>
+  <p>A tecnologia da Universidade Cornell é considerada uma solução promissora por sua <strong>simplicidade</strong>. Ela não exige câmeras especiais, o que a torna acessível e prática. A inovação pode ser aplicada em diversas situações, como <strong>discursos políticos</strong>, <strong>entrevistas</strong> e <strong>eventos fechados</strong>, onde a autenticidade do conteúdo é crucial.</p>
+  <p>A abordagem também pode identificar edições de vídeo que manipulam o resultado, como cortes em uma entrevista. Ao comparar a gravação com o código de luz original, o sistema consegue visualizar exatamente onde e como as alterações foram feitas. A tecnologia oferece uma nova forma de garantir a <strong>confiabilidade do conteúdo</strong> em um mundo onde a linha entre o real e o artificial está cada vez mais tênue.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/shutterstock_688183171-1-1920x1080.jpg" alt="China Inaugura o Primeiro 'Shopping de Robôs' do Mundo">
+  </div>
+  <h3>China Inaugura o Primeiro "Shopping de Robôs" do Mundo</h3>
+  <p>A <strong>China</strong> inaugurou o primeiro "<strong>shopping de robôs</strong>" do mundo, localizado em <strong>Pequim</strong>. O empreendimento de quatro andares é inspirado no modelo de concessionárias de veículos e oferece mais de <strong>200 marcas</strong> de robôs, incluindo as chinesas <strong>Unitree Robotics</strong> e <strong>UBTech Robotics</strong>. A loja busca aproximar a robótica do público em geral, incentivando a interação com os dispositivos em um ambiente de "<strong>playground de tecnologia</strong>".</p>
+  <p>Os preços dos robôs variam bastante, com modelos a partir de <strong>2.000 yuans (cerca de R$ 1,5 mil)</strong>. Entre os destaques estão <strong>cães robóticos</strong>, máquinas de <strong>xadrez</strong>, <strong>robôs dançarinos</strong> e até mesmo <strong>humanoides em tamanho real</strong> de figuras históricas como <strong>Albert Einstein</strong>. O shopping também conta com um restaurante onde robôs cozinham e servem os pratos, além de uma área de entretenimento para <strong>esportes robóticos</strong>.</p>
+  <p><strong>Estratégia Chinesa para a Robótica</strong></p>
+  <p>Com a inauguração do shopping, a China busca normalizar a interação entre humanos e robôs no dia a dia. A estratégia posiciona o país não apenas como líder na fabricação de robôs, mas também na sua <strong>integração com o estilo de vida da população</strong>.</p>
+  <p>A iniciativa conta com apoio financeiro do governo chinês, que já liberou mais de <strong>US$ 20 bilhões</strong> em subsídios para startups de <strong>inteligência artificial</strong> e robótica, com planos de expandir esse fundo. O lançamento do "<strong>Robot Mall</strong>" coincide com a <strong>Conferência Mundial de Robôs de 2025</strong>, o que demonstra o compromisso da China em se firmar como uma potência global na área.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/arca-de-no-futurista-scaled.jpg" alt="Projeto Propõe 'Arca de Noé' Espacial para Salvar a Humanidade">
+  </div>
+  <h3>Projeto Propõe "Arca de Noé" Espacial para Salvar a Humanidade</h3>
+  <p>Um grupo de engenheiros italianos está desenvolvendo um projeto ambicioso para colonizar o espaço. A nave, chamada <strong>Chrysalis</strong>, é concebida como uma espécie de "<strong>Arca de Noé</strong>" futurista com a missão de levar até <strong>2.400 pessoas</strong> em uma viagem só de ida para <strong>Alpha Centauri</strong>, o sistema estelar mais próximo do Sol. A iniciativa busca proteger a humanidade de uma possível tragédia no planeta Terra.</p>
+  <p>O projeto inclui uma série de inovações tecnológicas para tornar a viagem viável, como a produção de <strong>alimentos em ambientes controlados</strong> a bordo e um planejamento populacional rigoroso. A governança da nave combinaria o uso de <strong>inteligência artificial</strong> com o comando humano.</p>
+  <p><strong>Tecnologia, Ficcção e o Futuro da Exploração Espacial</strong></p>
+  <p>Apesar de ser um conceito com muitas barreiras a serem superadas, a proposta da Chrysalis levanta questões importantes sobre o futuro da <strong>exploração espacial</strong> e a sobrevivência da espécie humana. A ideia, que antes parecia pertencer apenas à <strong>ficção científica</strong>, agora é objeto de estudo de engenheiros, que buscam soluções para tornar as viagens interestelares uma realidade.</p>
+  <p>Embora o projeto ainda não tenha previsão de sair do papel, ele serve como um ponto de partida para o debate sobre o uso de tecnologias avançadas para a preservação da vida e para a expansão da presença humana no espaço.</p>
+</article>
+  </section>
+
+  <section id="saude-tecnologia" class="news-section">
+    <h2>SAÚDE E TECNOLOGIA</h2>
+    <article class="news-article">
+  <div class="article-image">
+    <img src="https://p2.trrsf.com/image/fget/cf/1548/0/images.terra.com/2025/08/14/258840174-13662000.jpeg" alt="Nova Cirurgia Cerebral Traz Esperança para Pacientes com Depressão">
+  </div>
+  <h3>Nova Cirurgia Cerebral Traz Esperança para Pacientes com Depressão</h3>
+  <p>A medicina deu um passo significativo no tratamento da <strong>depressão severa</strong> com a realização da primeira <strong>Cirurgia de Estimulação Cerebral Profunda (ECP)</strong> na <strong>Colômbia</strong>. O procedimento, realizado no <strong>Hospital Internacional da Colômbia</strong>, é uma nova esperança para pacientes que não obtiveram sucesso com tratamentos convencionais, como medicamentos antidepressivos e psicoterapia.</p>
+  <p>A paciente, uma mulher de <strong>34 anos</strong> que sofria de depressão e ansiedade desde a adolescência, recebeu o implante de um pequeno dispositivo no cérebro. Este dispositivo emite <strong>impulsos elétricos</strong> que estimulam áreas cerebrais específicas ligadas ao humor, buscando aliviar os sintomas da depressão. A cirurgia foi conduzida pelo neurocirurgião <strong>William Omar Contreras</strong>.</p>
+  <p><strong>Como a Cirurgia de Estimulação Cerebral Profunda Funciona</strong></p>
+  <p>A <strong>Estimulação Cerebral Profunda</strong> já é usada há anos para tratar outras condições neurológicas, como o <strong>Parkinson</strong>. No entanto, sua aplicação para a depressão ainda é experimental e não foi aprovada por grandes agências de saúde. O procedimento consiste em implantar pequenos <strong>eletrodos</strong> em áreas específicas do cérebro, que são conectados a um dispositivo implantado sob a pele no peito. O aparelho gera <strong>pulsos elétricos</strong> que regulam a atividade cerebral e podem ajudar a corrigir disfunções relacionadas à depressão.</p>
+  <p>A ECP é considerada uma alternativa para casos de <strong>depressão resistente</strong>, onde os tratamentos tradicionais não surtem efeito. O procedimento experimental abre caminho para novas pesquisas e ensaios clínicos, que podem validar a ECP como um tratamento seguro e eficaz para a depressão severa.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/02/vacina-cncer-1920x1080.jpg" alt="Vacina Experimental Mostra Eficácia Contra Câncer">
+  </div>
+  <h3>Vacina Experimental Mostra Eficácia Contra Câncer</h3>
+  <p>Um novo estudo clínico de <strong>Fase 1</strong> revelou resultados promissores para uma vacina experimental universal, a <strong>ELI-002 2P</strong>, no tratamento de cânceres <strong>pancreáticos</strong> e <strong>colorretais</strong>. O imunizante, que ataca o gene mutado <strong>KRAS</strong>, um dos alvos mais difíceis de tratar em oncologia, foi testado em <strong>25 pacientes</strong>.</p>
+  <p>Os resultados, publicados na revista <strong>Nature Medicine</strong>, mostraram que cerca de <strong>85% dos pacientes</strong> desenvolveram uma resposta imunológica contra o KRAS. Pacientes que apresentaram respostas mais fortes tiveram uma sobrevida média de <strong>29 meses</strong> e passaram mais de <strong>15 meses</strong> sem recorrência da doença, superando os resultados do tratamento padrão.</p>
+  <p><strong>Abordagem da Vacina e Próximos Passos</strong></p>
+  <p>Diferente de vacinas personalizadas, o ELI-002 2P é um imunizante pronto para uso, o que o torna mais acessível. A vacina utiliza <strong>peptídeos lipofílicos</strong> que se fixam nos gânglios linfáticos, potencializando a ativação das células imunológicas. A técnica visa eliminar células cancerígenas microscópicas que podem sobrar após a cirurgia e o tratamento padrão, sendo as principais responsáveis pela recorrência da doença.</p>
+  <p>Os pesquisadores afirmam que o <strong>câncer de pâncreas</strong> é um dos mais urgentes para novas terapias, com uma taxa de sobrevida de cinco anos de apenas <strong>13%</strong>. Por isso, a possibilidade de atingir o gene KRAS com uma vacina não personalizada pode abrir caminho para avanços contra diversos tipos de câncer. A equipe já está conduzindo um <strong>ensaio clínico de Fase 2</strong> para comparar a eficácia da vacina com o tratamento padrão.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2024/10/cerebro-1-1920x1080.jpg" alt="Pesquisadores Revertem Sintomas de Demência em Testes com Camundongos">
+  </div>
+  <h3>Pesquisadores Revertem Sintomas de Demência em Testes com Camundongos</h3>
+  <p>Cientistas da <strong>França</strong> e do <strong>Canadá</strong> alcançaram um avanço significativo no estudo de doenças neurodegenerativas, como o <strong>Alzheimer</strong> e a <strong>demência</strong>. Pela primeira vez, eles comprovaram que a disfunção das <strong>mitocôndrias</strong> é a causa direta de sintomas cognitivos, como a perda de memória. Até então, acreditava-se que essa disfunção era apenas uma consequência das doenças.</p>
+  <p>As mitocôndrias, que geram energia para as células cerebrais, são essenciais para o funcionamento neural. A pesquisa, publicada na revista científica <strong>Nature Neuroscience</strong>, mostra que, ao restaurar a função mitocondrial, é possível reverter o comprometimento da memória.</p>
+  <p><strong>Ferramenta Genética Traz Melhora na Memória</strong></p>
+  <p>Para comprovar a hipótese, a equipe desenvolveu uma ferramenta genética chamada <strong>mitoDREADD-Gs</strong>. Ativada por um medicamento, ela aumenta a produção de energia mitocondrial de forma localizada e rápida.</p>
+  <p>Em testes com camundongos, a ativação da ferramenta reverteu o comprometimento da memória em poucas horas, mesmo em estágios avançados de degeneração. Apesar do resultado animador, o efeito não é permanente e exige tratamento contínuo. Além disso, a técnica ainda depende de engenharia genética e sua aplicação em humanos é complexa, tornando-se um objetivo de longo prazo.</p>
+  <p>No entanto, a descoberta abre novas perspectivas para entender os <strong>mecanismos moleculares</strong> por trás dessas doenças e pode levar ao desenvolvimento de terapias focadas na restauração da energia celular.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/bacterias-1920x1080.jpg" alt="IA do MIT Cria Novos Antibióticos Contra Superbactérias">
+  </div>
+  <h3>IA do MIT Cria Novos Antibióticos Contra Superbactérias</h3>
+  <p>Pesquisadores do <strong>MIT</strong>, com a ajuda de <strong>inteligência artificial generativa</strong>, desenvolveram dois novos antibióticos em potencial. Os compostos foram criados para combater a <strong>gonorreia resistente a medicamentos</strong> e a <strong>superbactéria MRSA</strong>, que causa infecções graves. Os resultados, publicados na revista <strong>Cell</strong>, mostram que as moléculas, projetadas átomo por átomo, eliminaram as bactérias em testes de laboratório e em animais.</p>
+  <p>O avanço é visto como um marco e, segundo um dos pesquisadores, pode inaugurar uma "<strong>segunda era de ouro</strong>" na descoberta de antibióticos. A IA foi treinada com dados químicos e informações sobre como diferentes estruturas moleculares afetam as bactérias. O sistema analisou <strong>36 milhões de compostos</strong>, criando moléculas inéditas e filtrando as que poderiam ser tóxicas ou semelhantes a antibióticos já existentes.</p>
+  <p><strong>Desafios no Caminho para o Mercado</strong></p>
+  <p>Apesar do sucesso nos testes iniciais, a chegada dos novos antibióticos aos pacientes ainda deve levar anos. O processo de desenvolvimento de medicamentos é <strong>longo e caro</strong>, com a necessidade de rigorosos ensaios clínicos para garantir segurança e eficácia.</p>
+  <p>Além dos desafios técnicos, há obstáculos econômicos. O desenvolvimento de antibióticos não é um setor atrativo para a indústria farmacêutica devido ao <strong>retorno financeiro limitado</strong>, o que pode dificultar a produção e comercialização dessas novas drogas.</p>
+  <p>Ainda assim, a pesquisa reforça o potencial da <strong>IA como uma ferramenta estratégica</strong> para expandir o arsenal de combate à crescente <strong>resistência bacteriana</strong>, um problema que causa mais de um milhão de mortes por ano no mundo.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/02/sade-IA-1920x954.jpg" alt="IA Promete Criar Medicamentos para Doenças 'Intocáveis'">
+  </div>
+  <h3>IA Promete Criar Medicamentos para Doenças "Intocáveis"</h3>
+  <p>Pesquisadores das universidades <strong>McMaster</strong>, <strong>Duke</strong> e <strong>Cornell</strong> desenvolveram uma nova ferramenta de <strong>inteligência artificial</strong> que pode revolucionar a descoberta de medicamentos. A tecnologia, chamada <strong>PepMLM</strong>, é capaz de projetar pequenas moléculas semelhantes a fármacos para atacar e destruir proteínas nocivas no corpo, mesmo sem conhecer sua estrutura tridimensional.</p>
+  <p>A inovação, publicada na revista <strong>Nature Biotechnology</strong>, pode abrir caminho para tratamentos de doenças que até então eram resistentes a terapias tradicionais, como certos tipos de <strong>câncer</strong>, <strong>distúrbios neurológicos</strong> e <strong>infecções virais</strong>. O algoritmo do PepMLM, originalmente criado para entender a linguagem humana, foi adaptado para interpretar a "linguagem" das proteínas e projetar medicamentos com base apenas na sua <strong>sequência de aminoácidos</strong>.</p>
+  <p><strong>Como a Tecnologia Funciona e Seus Benefícios</strong></p>
+  <p>O PepMLM é capaz de gerar <strong>peptídeos</strong>, que são pequenas proteínas, que se ligam e, em alguns casos, degradam proteínas tóxicas associadas a doenças como o câncer e a <strong>doença de Huntington</strong>. A abordagem é vista como um "<strong>divisor de águas</strong>" por permitir o desenvolvimento de terapias para alvos que antes eram considerados inalcançáveis, tornando-se uma esperança para pacientes com doenças graves.</p>
+  <p>As equipes de pesquisa já estão trabalhando em novas versões da IA, como o <strong>PepTune</strong> e o <strong>MOG-DFM</strong>, para melhorar a estabilidade e a entrega desses peptídeos no organismo. O objetivo final é criar uma <strong>plataforma terapêutica programável</strong> que possa, a partir de uma sequência, gerar um medicamento real. O avanço destaca o papel estratégico da IA para acelerar a descoberta de novos tratamentos e expandir as fronteiras da medicina.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/07/atestado_medico-1024x605.jpg" alt="Estudo Alerta que IA Pode Prejudicar o Desempenho Médico">
+  </div>
+  <h3>Estudo Alerta que IA Pode Prejudicar o Desempenho Médico</h3>
+  <p>Um estudo publicado na revista <strong>The Lancet Gastroenterology & Hepatology</strong> levanta um alerta importante sobre o uso da <strong>inteligência artificial (IA)</strong> na medicina. A pesquisa, realizada na <strong>Polônia</strong>, sugere que médicos que se apoiam constantemente em ferramentas de IA podem ter um desempenho inferior quando não têm acesso à tecnologia.</p>
+  <p>O trabalho comparou o desempenho de profissionais que utilizam IA e daqueles que não usam a ferramenta para detectar <strong>câncer colorretal</strong> por meio de <strong>colonoscopia</strong>. Os resultados mostraram que os médicos que utilizavam IA apresentaram uma taxa de detecção de tumores de <strong>22,4%</strong> sem o auxílio da tecnologia, enquanto os que não a utilizavam tiveram uma taxa de <strong>28,4%</strong>. A diferença de seis pontos percentuais sugere que o uso contínuo da IA pode levar a uma dependência que diminui as capacidades do profissional.</p>
+  <p><strong>Debate sobre o Papel da IA na Saúde</strong></p>
+  <p>O estudo se soma a outras discussões recentes sobre a segurança e a confiabilidade da IA na área da saúde. Um caso recente envolvendo o modelo <strong>Med-Gemini</strong>, do <strong>Google</strong>, por exemplo, demonstrou o fenômeno das "<strong>alucinações da IA</strong>", em que o sistema inventou um termo médico para descrever uma lesão.</p>
+  <p>Embora o potencial da IA para acelerar pesquisas e auxiliar no diagnóstico de doenças seja inegável, o estudo aponta para a necessidade de cautela. A pesquisa, no entanto, ressalta que não é possível concluir que a tecnologia prejudica o trabalho dos médicos, mas sim que ela pode afetar o comportamento e o processo de tomada de decisão dos profissionais.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2024/08/RV-1-1024x580.jpg" alt="Realidade Virtual Pode Induzir Sonhos Lúcidos">
+  </div>
+  <h3>Realidade Virtual Pode Induzir Sonhos Lúcidos</h3>
+  <p>Um estudo recente sugere que a <strong>realidade virtual (RV)</strong> pode ser uma ferramenta eficaz para induzir <strong>sonhos lúcidos</strong>, ou seja, aqueles em que a pessoa tem consciência de que está sonhando e pode controlar a narrativa. Pesquisadores conseguiram provocar essa experiência em voluntários ao expô-los a um programa de realidade virtual pouco antes de dormirem. O experimento mostrou que a tecnologia pode influenciar o subconsciente e ter impactos emocionais e psicológicos duradouros.</p>
+  <p>O estudo envolveu voluntários que já tinham sonhos lúcidos com frequência. Eles usaram óculos de RV para acessar um programa chamado <strong>Ripple</strong>, que simulava sensações como conexão com outras pessoas e perda do ego. Durante o sono, os pesquisadores reproduziram sons do programa na <strong>fase REM</strong> (a fase em que os sonhos mais vívidos ocorrem) para estimular sonhos semelhantes à experiência virtual. Três dos quatro participantes relataram ter tido sonhos lúcidos diretamente relacionados à simulação.</p>
+  <p><strong>Benefícios Psicológicos e Expansão de Pesquisas</strong></p>
+  <p>Os voluntários do estudo relataram que as sensações da experiência virtual se prolongaram para a vida real. Um dos participantes descreveu uma profunda experiência de "<strong>interconexão e dissolução do ego</strong>", enquanto outros relataram que suas percepções sensoriais, como <strong>tato e olfato</strong>, ficaram mais intensificadas por vários dias após o teste.</p>
+  <p>Embora o estudo seja pequeno, os pesquisadores acreditam que ele abre caminho para novas pesquisas sobre o potencial terapêutico da realidade virtual. A tecnologia poderia ser usada para promover o <strong>bem-estar psicológico</strong> por meio de sonhos, explorando a conexão entre a experiência imersiva e o sono. O estudo demonstra como a tecnologia pode ser uma nova ferramenta para influenciar os processos mentais e emocionais de forma positiva.</p>
+</article>
+  </section>
+
+  <section id="deu-ruim" class="news-section">
+    <h2>BUGOU!</h2>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://f.i.uol.com.br/fotografia/2021/11/05/16361565306185c4729ee39_1636156530_16x9_md.jpg" alt="Diretrizes de IA da Meta Permitiram Conteúdo Controversos">
+  </div>
+  <h3>Diretrizes de IA da Meta Permitiram Conteúdo Controversos</h3>
+  <p>Um documento interno da <strong>Meta</strong>, proprietária de plataformas como <strong>Instagram</strong> e <strong>Facebook</strong>, revelou que as regras da empresa permitiam que seus assistentes de <strong>inteligência artificial (IA)</strong> gerassem conteúdo controverso e potencialmente perigoso. Segundo a agência de notícias <strong>Reuters</strong>, os padrões do <strong>Meta AI</strong> autorizavam que os assistentes se envolvessem em conversas românticas ou sensuais com crianças, gerassem informações médicas falsas e até mesmo criassem declarações que rebaixavam pessoas com base em sua raça.</p>
+  <p>A Meta confirmou a autenticidade do documento e afirmou que, após ser questionada pela Reuters, removeu os trechos que autorizavam o comportamento inadequado com menores. A empresa declarou que os exemplos citados eram "errôneos e inconsistentes" com suas políticas, que proíbem conteúdo que sexualize crianças ou dramatizações de cunho sexual envolvendo menores.</p>
+  <p><strong>Padrões de Risco e a Geração de Conteúdo Falso e Violento</strong></p>
+  <p>O documento, de mais de <strong>200 páginas</strong>, detalha o que a equipe e os contratados da Meta devem considerar como aceitável durante o treinamento e uso dos assistentes de IA. As diretrizes permitem que o Meta AI crie conteúdo falso, desde que haja um aviso explícito de que a informação não é verdadeira. Um exemplo chocante citado era a permissão para um artigo que alegasse que um membro da <strong>realeza britânica</strong> tivesse uma <strong>infecção sexualmente transmissível</strong>, desde que a falsidade da informação fosse reconhecida.</p>
+  <p>Os padrões também permitiam a geração de imagens de violência, como um menino socando uma menina, ou uma mulher sendo ameaçada por um homem com uma motosserra. A empresa não comentou sobre os exemplos de <strong>raça</strong> e <strong>violência</strong> citados. O incidente destaca as complexidades e os desafios na criação de diretrizes éticas para a IA, especialmente em plataformas de grande alcance global.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://t.ctcdn.com.br/yR69h1WL_oI22uUjYibWRX6D3zs=/1024x576/smart/i597933.jpeg" alt="Brasil Lidera Ranking de Ciberataques na América Latina">
+  </div>
+  <h3>Brasil Lidera Ranking de Ciberataques na América Latina</h3>
+  <p>Em um cenário de digitalização crescente, o <strong>Brasil</strong> se consolidou como líder em ataques cibernéticos na <strong>América Latina</strong>. De acordo com um relatório da <strong>Netscout</strong>, o país registrou mais de <strong>meio milhão de incidentes</strong> no <strong>segundo semestre de 2024</strong>, um número que representa mais da metade do total da região e um aumento de quase <strong>30%</strong> em relação ao período anterior. Segundo especialistas, a fragilidade das redes brasileiras se deve, em parte, à falta de uma visão clara sobre o que acontece nas redes corporativas. Embora muitas empresas invistam em prevenção, elas negligenciam a preparação para ataques, que são considerados inevitáveis. O Brasil também se mantém entre os <strong>cinco países mais atacados</strong> e emissores de ciberataques do mundo.</p>
+  <p><strong>IA e a Nova Era do Cibercrime</strong></p>
+  <p>A sofisticação dos ataques cibernéticos está crescendo, com a <strong>inteligência artificial (IA)</strong> sendo usada para burlar sistemas de segurança, automatizar campanhas e até mesmo instruir cibercriminosos inexperientes. Essa evolução deu origem ao conceito de "<strong>crime como serviço</strong>" na <strong>Dark Web</strong>, onde é possível encomendar um ataque por valores a partir de <strong>US$ 5</strong>. O uso de <strong>deepfakes</strong> também tem se tornado uma ameaça real. Um exemplo citado foi o caso de um funcionário de uma empresa britânica que foi instruído por um deepfake do diretor financeiro a transferir <strong>US$ 25 milhões</strong>. A IA assume o papel técnico, criando e-mails falsos convincentes e simulando comportamentos de usuários reais para enganar os sistemas de segurança.</p>
+  <p><strong>Vulnerabilidades e Estratégias de Combate</strong></p>
+  <p>Especialistas alertam que a segurança do perímetro já não é mais suficiente devido à mobilidade dos dispositivos. O caso do ataque ao <strong>Banco Central</strong> e à <strong>CVM</strong> foi citado como exemplo de como a <strong>engenharia social</strong>, que explora a compra de credenciais de baixo nível, pode comprometer toda a segurança de uma empresa. Para combater esse cenário, empresas como a Netscout estão usando IA para aprender o comportamento padrão da rede e detectar anomalias. Essa tecnologia consegue identificar o "<strong>paciente zero</strong>" de uma infecção e bloquear a exfiltração de dados. Embora a segurança total seja inatingível, a chave é o investimento em <strong>prevenção, monitoramento em tempo real e a colaboração</strong> entre as empresas para mitigar os riscos.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://www.dorcronica.blog.br/web/wp-content/uploads/2024/01/fb-o-chatgpt-nos-cuidados-da-saude.png" alt="Homem Adoece Após Seguir Conselho de Saúde do ChatGPT">
+  </div>
+  <h3>Homem Adoece Após Seguir Conselho de Saúde do ChatGPT</h3>
+  <p>O uso da <strong>inteligência artificial</strong> para obter informações de saúde levantou um sério alerta após um homem de <strong>60 anos</strong>, nos <strong>Estados Unidos</strong>, ser hospitalizado com uma doença rara. O paciente desenvolveu <strong>bromismo</strong>, uma intoxicação por brometos, após seguir uma orientação do <strong>ChatGPT</strong> para substituir o sal de cozinha por brometo em sua dieta.</p>
+  <p>O caso, publicado em um artigo no periódico <strong>Annals of Internal Medicine</strong>, detalha que o homem apresentou sintomas como delírios e paranoia. Ele chegou a ser encaminhado para uma ala psiquiátrica, mas sua condição se normalizou após receber minerais e vitaminas. O paciente revelou aos médicos que havia consultado o ChatGPT sobre alternativas ao sal, o que o levou à intoxicação após <strong>três meses</strong> seguindo o conselho da IA.</p>
+  <p><strong>Alerta Sobre o Uso de IA em Questões de Saúde</strong></p>
+  <p>O caso destaca os perigos de buscar conselhos médicos em plataformas de inteligência artificial. Os autores do artigo científico alertaram que o uso da IA pode contribuir para o desenvolvimento de "<strong>doenças evitáveis e resultados adversos para a saúde</strong>". A intoxicação por brometos, que já foi responsável por diversas internações psiquiátricas no passado, é hoje uma condição rara.</p>
+  <p>O incidente serve como um lembrete de que a IA, apesar de sua utilidade em diversas áreas, não é um substituto para a orientação de <strong>profissionais de saúde qualificados</strong>. É fundamental que os usuários busquem <strong>fontes confiáveis</strong> e consultem médicos para obter informações e diagnósticos precisos sobre condições de saúde.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/iStock-1395731833-1-1920x1080.jpg" alt="Extensões de IA em Navegadores Podem Expor Dados Confidenciais">
+  </div>
+  <h3>Extensões de IA em Navegadores Podem Expor Dados Confidenciais</h3>
+  <p>Uma nova pesquisa alerta que <strong>extensões de navegadores</strong> com <strong>inteligência artificial (IA) generativa</strong> podem estar coletando e expondo dados confidenciais dos usuários. O estudo, conduzido por pesquisadores da <strong>University College London</strong> e da <strong>Universidade Mediterrânea de Reggio Calabria</strong>, analisou nove das extensões mais populares e descobriu que elas frequentemente violam a privacidade do usuário, sem transparência ou consentimento.</p>
+  <p>Os pesquisadores simularam a navegação de um "homem rico da Califórnia" para testar como os assistentes de IA se comportavam. As descobertas foram alarmantes:</p>
+  <ul>
+    <li>O assistente <strong>Merlin</strong> capturou informações de formulários, como dados bancários e de saúde, e transmitiu o conteúdo completo de páginas da web para seus servidores.</li>
+    <li>Extensões como <strong>Sider</strong> e <strong>TinaMind</strong> compartilharam informações de identificação, como o endereço IP do usuário, com plataformas de rastreamento de terceiros.</li>
+    <li>Assistentes como <strong>ChatGPT para Google</strong>, <strong>Copilot</strong>, <strong>Monica</strong> e <strong>Sider</strong> demonstraram a capacidade de inferir atributos do usuário, como idade e renda, para personalizar as respostas.</li>
+  </ul>
+  <p><strong>IA Invade Espaços Privados</strong></p>
+  <p>A pesquisa também revelou que alguns assistentes não paravam de registrar a atividade quando o usuário alternava para espaços privados, como <strong>portais de saúde</strong> ou <strong>serviços de namoro</strong>. O estudo interceptou e descriptografou o tráfego de dados, provando que as extensões violavam regras de proteção de dados como a <strong>Lei de Portabilidade e Responsabilidade de Seguros de Saúde (HIPAA)</strong> nos EUA.</p>
+  <p>As descobertas indicam que, enquanto os usuários podem estar cientes de que mecanismos de busca e redes sociais coletam dados para publicidade, os assistentes de IA operam com um acesso sem precedentes a áreas da vida online que deveriam permanecer privadas. Apenas o assistente <strong>Perplexity</strong> não apresentou evidências de coleta ou personalização indevida de dados.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/iStock-1198536860-1920x1080.jpg" alt="Pesquisa Aborda o Risco de “Dados Envenenados” para a IA">
+  </div>
+  <h3>Pesquisa Aborda o Risco de “Dados Envenenados” para a IA</h3>
+  <p>A segurança e a confiabilidade da <strong>inteligência artificial (IA)</strong> dependem diretamente da qualidade dos dados usados para seu treinamento. Em um cenário de crescentes ataques cibernéticos, pesquisadores da <strong>Universidade Internacional da Flórida</strong> estão desenvolvendo mecanismos para combater o que chamam de "<strong>dados envenenados</strong>", que podem comprometer a segurança da IA.</p>
+  <p>Em um artigo publicado no periódico científico <strong>IEEE Transactions on Artificial Intelligence</strong>, os autores <strong>Hadi Amini e Ervin Moore</strong> relembram o caso do chatbot <strong>Tay</strong>, da <strong>Microsoft</strong>. Em <strong>2016</strong>, a ferramenta foi rapidamente contaminada por usuários com termos inapropriados, levando a empresa a desativar o sistema. O incidente destacou a vulnerabilidade dos modelos de IA a ataques que manipulam os dados de treinamento.</p>
+  <p><strong>Solução Híbrida com Blockchain e Aprendizado Federado</strong></p>
+  <p>A principal abordagem dos pesquisadores é o uso de <strong>aprendizado federado</strong>, que permite que os modelos de IA sejam treinados a partir de <strong>fontes descentralizadas</strong>, sem a necessidade de coletar todos os dados em um único local. Isso cria uma camada de proteção, pois informações contaminadas não afetariam o modelo como um todo.</p>
+  <p>Para fortalecer ainda mais o sistema, os pesquisadores propõem a integração da tecnologia <strong>blockchain</strong>. A blockchain registra de forma transparente como os dados são compartilhados e verificados, o que ajuda a detectar anomalias e a identificar dados envenenados antes que o problema se espalhe. A estrutura interligada da blockchain também permite rastrear e reverter danos causados por entradas maliciosas. Os autores afirmam ter criado uma ferramenta que combina essas duas tecnologias e que se mostrou eficaz na eliminação de agentes mal-intencionados durante o processo de treinamento.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://www.ibm.com/content/dam/connectedassets-adobe-cms/worldwide-content/stock-assets/getty/image/others/6a/4e/6a4eb9e7-c90d-4ad5-906518178fe2f785.component.xl.ts=1739882486910.jpg/content/adobe-cms/de/de/think/cloud/jcr:content/root/table_of_contents/spotlight" alt="IBM Cloud Sofre Quarta Falha em Poucos Meses">
+  </div>
+  <h3>IBM Cloud Sofre Quarta Falha em Poucos Meses</h3>
+  <p>A <strong>IBM Cloud</strong> enfrentou sua quarta grande interrupção de serviço desde <strong>maio</strong>. A falha, que durou mais de <strong>duas horas</strong>, impediu que clientes corporativos acessassem recursos essenciais. A <strong>IBM</strong> classificou o incidente como de gravidade máxima, com os usuários enfrentando problemas de <strong>autenticação</strong> e acesso a <strong>27 serviços</strong> em <strong>10 regiões globais</strong>.</p>
+  <p>A série de falhas de autenticação aponta para uma <strong>fragilidade sistêmica</strong> na arquitetura do <strong>plano de controle da IBM</strong>, que é a infraestrutura que gerencia o acesso e a orquestração dos serviços. A recorrência desses problemas tem levado especialistas a questionar a resiliência da plataforma e a promessa da IBM de ser líder em soluções de <strong>nuvem híbrida</strong>.</p>
+  <p><strong>Impacto nos Negócios e no Mercado</strong></p>
+  <p>As interrupções do serviço da IBM Cloud vão além de um simples inconveniente, pois criam um <strong>ponto de estrangulamento operacional</strong> para empresas que dependem de automação e gerenciamento em tempo real. A falta de acesso ao painel de controle da nuvem pode paralisar as operações, mesmo que as cargas de trabalho continuem a funcionar.</p>
+  <p>O momento das falhas é particularmente desafiador para a IBM, que tem lutado para ganhar uma fatia de mercado significativa no cenário global de nuvem, dominado por gigantes como a <strong>Amazon Web Services (AWS)</strong> e a <strong>Microsoft Azure</strong>. As falhas repetidas minam a credibilidade da IBM e podem levar clientes, especialmente de setores regulamentados como <strong>finanças</strong> e <strong>saúde</strong>, a reavaliar suas relações com a empresa.</p>
+  <p><strong>Novos Padrões de Arquitetura em Nuvem</strong></p>
+  <p>Especialistas da indústria defendem que as falhas da IBM Cloud servem como um alerta para que as empresas mudem a forma como avaliam seus provedores de nuvem. É crucial que as empresas exijam garantias de <strong>resiliência no plano de controle</strong> e em componentes de gerenciamento de identidade. Além disso, a recomendação é que as corporações adotem uma <strong>arquitetura de múltiplos planos de controle</strong>, que garante que a falha em um único provedor de nuvem não paralise as operações. Essa estratégia, que vai além do conceito de <strong>multi-nuvem tradicional</strong>, busca distribuir a orquestração e os sistemas de gerenciamento para evitar pontos únicos de falha.</p>
+</article>
+  </section>
+
+  <section id="noticias-variadas" class="news-section">
+    <h2>NOTÍCIAS VARIADAS</h2>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/redes-sociais-1920x1080.jpg" alt="PL das Redes Sociais no Brasil Apresenta Mudanças">
+  </div>
+  <h3>PL das Redes Sociais no Brasil Apresenta Mudanças</h3>
+  <p>O relatório do <strong>PL 2628/2022</strong>, que busca regulamentar o uso de redes sociais por crianças e adolescentes no Brasil, foi apresentado com alterações significativas. Uma das principais mudanças foi a retirada do termo “<strong>dever de cuidado</strong>”, que, segundo o relator, poderia gerar insegurança jurídica e exigências desproporcionais para as plataformas. No lugar, o texto adota o conceito de “<strong>prevenção, proteção, informação e segurança</strong>”.</p>
+  <p>A nova formulação do projeto modifica a obrigação das empresas, que antes teriam de impedir ativamente o uso de redes sociais por crianças. Agora, elas devem apenas fornecer mecanismos para que as famílias possam controlar a navegação de seus filhos. Outra mudança importante é a obrigatoriedade de as plataformas manterem um <strong>representante legal no Brasil</strong>, o que facilitaria a interlocução com o <strong>Poder Público</strong> para o cumprimento de ordens judiciais.</p>
+  <p><strong>Proibições e Direcionamento de Conteúdo</strong></p>
+  <p>O relatório especifica que conteúdos como <strong>pornografia</strong>, <strong>jogos de azar</strong> e <strong>apostas</strong> serão considerados impróprios para menores de idade. A <strong>verificação de idade</strong> também ganhou novas regras, e provedores de lojas de aplicativos e sistemas operacionais serão responsabilizados por garantir que o <strong>consentimento do usuário</strong> seja explícito.</p>
+  <p>Além disso, o projeto mantém a proibição de publicidade direcionada a menores, baseada na coleta de dados, e a obrigatoriedade de configurações automáticas que sejam as mais protetivas possíveis para os usuários mais jovens. A discussão do projeto acontece em um momento de grande repercussão sobre o tema, e a proposta será analisada na <strong>Comissão de Comunicação da Câmara</strong> antes de seguir para o plenário.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/capa-satelite-starlink-telecom-1920x1000.jpg" alt="Starlink Ameaça o Modelo de Negócios das Telecoms">
+  </div>
+  <h3>Starlink Ameaça o Modelo de Negócios das Telecoms</h3>
+  <p>A <strong>Starlink</strong>, empresa de satélites de <strong>Elon Musk</strong>, está testando uma nova tecnologia que pode revolucionar o mercado de telecomunicações. Chamada "<strong>Direct to Cell</strong>", a tecnologia permite que celulares <strong>4G</strong> se conectem diretamente a satélites, sem a necessidade de torres ou chips locais. A promessa inicial é de cobertura de mensagens em qualquer lugar do planeta, com planos de expandir para dados móveis e chamadas de voz.</p>
+  <p>Essa inovação tem o potencial de impactar diretamente o modelo de negócios das operadoras de telefonia, que nos últimos anos investiram pesado em <strong>infraestrutura terrestre</strong>. A tecnologia da Starlink torna esses investimentos menos estratégicos, já que a cobertura se torna global por padrão. O movimento é comparado à forma como o <strong>WhatsApp</strong> e o <strong>streaming</strong>, nos <strong>anos 2000</strong>, forçaram as operadoras a mudarem seu modelo de negócio, que antes era focado em minutos e SMS.</p>
+  <p><strong>Reação do Mercado e o Futuro da Conectividade</strong></p>
+  <p>A entrada da <strong>Starlink</strong> no mercado de telecomunicações está gerando uma reação das operadoras. Algumas estão buscando parcerias, enquanto outras pressionam por regulamentações. O "Direct to Cell" pode mudar a dinâmica competitiva, com um novo player vindo do espaço.</p>
+  <p>A Starlink já opera em mais de <strong>70 países</strong>, e a <strong>SpaceX</strong> está lançando novos satélites com a capacidade de se comunicar diretamente com celulares. Com a previsão de que o serviço de dados móveis e chamadas diretas via satélite esteja disponível em <strong>2025</strong>, a nova disputa no setor não é mais por território, mas por relevância. A tecnologia da Starlink pode, pela primeira vez, dar aos consumidores a opção de trocar seu <strong>chip tradicional</strong> por uma conexão via satélite.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2024/09/chat_GPT-e1728914705775-1920x1080.jpg" alt="Aplicativo Móvel do ChatGPT Bate Recordes de Receita">
+  </div>
+  <h3>Aplicativo Móvel do ChatGPT Bate Recordes de Receita</h3>
+  <p>O aplicativo móvel do <strong>ChatGPT</strong> alcançou a marca de <strong>US$ 2 bilhões</strong> em gastos globais de consumidores desde o seu lançamento em <strong>maio de 2023</strong>. O valor é cerca de <strong>30 vezes maior</strong> que a receita combinada de seus principais concorrentes, incluindo <strong>Claude</strong>, <strong>Copilot</strong> e <strong>Grok</strong>.</p>
+  <p>Em <strong>2025</strong>, o aplicativo já arrecadou <strong>US$ 1,35 bilhão</strong>, o que representa um crescimento de <strong>673%</strong> em relação ao ano anterior. O concorrente mais próximo, o <strong>Grok</strong>, acumulou apenas <strong>US$ 25,6 milhões</strong> no mesmo período. A receita média mensal do ChatGPT é de <strong>US$ 193 milhões</strong>, comparada aos <strong>US$ 25 milhões</strong> de <strong>2024</strong>. O gasto global por download também é o mais alto, com uma média de <strong>US$ 2,91</strong>, e chega a <strong>US$ 10</strong> nos <strong>Estados Unidos</strong>.</p>
+  <p><strong>Liderança em Downloads e Popularidade</strong></p>
+  <p>Além de dominar em receita, o ChatGPT também se destaca em número de downloads, com cerca de <strong>690 milhões de instalações</strong> globalmente. Em 2025, o aplicativo foi baixado <strong>318 milhões de vezes</strong>, quase três vezes mais que no mesmo período de 2024. A <strong>Índia</strong> lidera o ranking de downloads, com <strong>13,7% do total</strong>, seguida pelos <strong>Estados Unidos</strong>, com <strong>10,3%</strong>.</p>
+  <p>Os dados da pesquisa confirmam que o ChatGPT mantém uma liderança clara em popularidade e monetização no mercado de assistentes de inteligência artificial para dispositivos móveis, mesmo com a entrada de novos competidores.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/04/99-ifood-1920x1080.jpg" alt="99Food Retorna ao Brasil para Competir com o iFood">
+  </div>
+  <h3>99Food Retorna ao Brasil para Competir com o iFood</h3>
+  <p>O serviço de delivery <strong>99Food</strong> voltou a operar em <strong>São Paulo</strong> e sua região metropolitana, prometendo acirrar a concorrência com o <strong>iFood</strong>, que atualmente domina o mercado de entregas de comida no Brasil. Em fase de testes, o serviço tem previsão de iniciar a operação oficial na próxima semana, com uma estratégia agressiva para atrair tanto usuários quanto restaurantes e entregadores.</p>
+  <p>A 99Food promete <strong>preços de cardápio</strong>, <strong>entregas grátis</strong> e a <strong>isenção de taxas para restaurantes</strong>. Para os entregadores, a empresa oferece vantagens como um bônus para quem fizer um número mínimo de entregas por dia. A <strong>99</strong>, que é de propriedade da empresa chinesa <strong>Didi</strong>, planeja investir um total de <strong>R$ 500 milhões</strong> na região metropolitana de São Paulo.</p>
+  <p><strong>Histórico e Desafios da Concorrência</strong></p>
+  <p>A 99Food já operou no Brasil, mas encerrou suas atividades em <strong>2023</strong>. Agora, a empresa retorna ao mercado para tentar a sorte novamente, em um setor onde a concorrência é forte. Outras plataformas, como o <strong>Uber Eats</strong>, já tentaram competir com o iFood, mas também acabaram saindo do mercado.</p>
+  <p>Apesar do domínio do iFood, o cenário pode mudar com a chegada da 99Food e, em breve, da chinesa <strong>Keeta</strong>, que é o maior serviço de delivery da China. A nova rodada de competição pode ser benéfica para os consumidores, com a possibilidade de mais ofertas e promoções.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/07/pix-2-1920x1080.jpg" alt="Pix Parcelado Chega em Setembro">
+  </div>
+  <h3>Pix Parcelado Chega em Setembro</h3>
+  <p>O <strong>Pix</strong> terá uma nova funcionalidade: o <strong>Pix Parcelado</strong>. A novidade será regulamentada pelo <strong>Banco Central</strong> ainda em <strong>setembro</strong> e deve funcionar como uma linha de crédito formal oferecida pelas instituições financeiras. Segundo o presidente do BC, <strong>Gabriel Galípolo</strong>, a funcionalidade deve beneficiar principalmente os cerca de <strong>60 milhões de brasileiros</strong> que não têm acesso a cartão de crédito.</p>
+  <p>A nova modalidade permitirá que os usuários façam pagamentos de valores mais altos de forma parcelada, com <strong>taxas de juros competitivas</strong>. O recebedor, por sua vez, continuará recebendo o valor integral da transação de forma imediata. O Pix Parcelado é visto como uma alternativa para compras maiores no comércio e para qualquer tipo de transferência, ampliando o acesso a crédito para um grande número de pessoas.</p>
+  <p><strong>Impacto no Sistema Financeiro e no Orçamento do BC</strong></p>
+  <p>O presidente do Banco Central reforça que o Pix Parcelado não tem a intenção de substituir o <strong>cartão de crédito</strong>, mas sim de oferecer mais uma alternativa de pagamento. Ele também defende que o aperfeiçoamento contínuo do sistema de pagamentos exige um aumento do orçamento para tecnologia.</p>
+  <p>Galípolo ressalta que os custos de manutenção do Pix têm crescido e já representam quase <strong>50% das despesas tecnológicas</strong> do Banco Central, em comparação com menos de <strong>30%</strong> antes do lançamento do sistema. Por isso, ele defende que o BC tenha uma estrutura jurídica e orçamentária compatível com as inovações que a própria entidade tem produzido, garantindo a eficiência e o desenvolvimento futuro do sistema.</p>
+</article>
+  </section>
+
+  <section id="curiosidades" class="news-section">
+    <h2>CURIOSIDADES</h2>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://somoscidade.com.br/wp-content/uploads/2024/08/Designer-10.jpeg" alt="Peter Diamandis Prevê Futuro 'Irreconhecível' com a IA">
+  </div>
+  <h3>Peter Diamandis Prevê Futuro "Irreconhecível" com a IA</h3>
+  <p><strong>Peter Diamandis</strong>, futurista e fundador da <strong>Singularity University</strong>, acredita que a <strong>inteligência artificial (IA)</strong> será a pedra fundamental de transformações que tornarão o mundo quase irreconhecível até <strong>2038</strong>. Em entrevista, ele expressou otimismo sobre o futuro, destacando que a IA está se tornando uma tecnologia de custo quase zero, acessível a bilhões de pessoas.</p>
+  <p>Apesar de reconhecer que algumas tecnologias, como <strong>carros autônomos</strong> e <strong>voos espaciais comerciais</strong>, evoluíram mais lentamente do que o esperado, ele afirma que elas estão em uma trajetória de avanço constante. Diamandis ressalta que a chegada de uma IA mais forte, seja a <strong>Inteligência Artificial Geral (AGI)</strong> ou superinteligência digital, atuará como um ponto de inflexão que impulsionará o progresso em diversas áreas, incluindo longevidade, ciência dos materiais e fusão.</p>
+  <p><strong>Longevidade e a Importância do Conhecimento</strong></p>
+  <p>Diamandis dedica grande parte de seu tempo a duas áreas: IA e longevidade. Ele é um defensor do aumento da expectativa de vida saudável e, através de sua empresa <strong>Fountain Life</strong>, busca "digitalizar" o corpo humano para detectar doenças precocemente. O serviço coleta cerca de <strong>200 gigabytes de dados</strong> de cada pessoa, incluindo <strong>ressonância magnética</strong>, <strong>genoma</strong> e <strong>biomarcadores sanguíneos</strong>, com o objetivo de identificar problemas em seus estágios iniciais, quando ainda podem ser prevenidos.</p>
+  <p>O futurista incentiva as pessoas a serem proativas com sua saúde, questionando a ideia de que é melhor "não saber" o que está acontecendo dentro do corpo. Ele argumenta que a <strong>detecção precoce de problemas</strong> como câncer ou aneurismas pode salvar vidas, oferecendo a oportunidade de agir antes que seja tarde demais.</p>
+  <p><strong>"Moonshots" e o Futuro das Tecnologias</strong></p>
+  <p>Ao falar sobre "<strong>moonshots</strong>", projetos grandiosos e ambiciosos, Diamandis destaca que eles devem ser impulsionados por uma paixão extraordinária. A jornada para alcançar esses objetivos é de aproximadamente uma década e exige agilidade e curiosidade.</p>
+  <p>Ele reafirma que a IA é a principal tecnologia que moldará o futuro, pois é a "<strong>mãe de todas as futuras tecnologias emergentes</strong>". A IA permitirá avanços em áreas como a longevidade, a ciência dos materiais, as fontes de energia e a educação, democratizando o acesso a informações e transformando a sociedade de forma fundamental.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://www.estadao.com.br/resizer/v2/6555MNPBBJFJPOLITPXYVMOINM.jpeg?quality=80&auth=9b00b7dba01ec68b3571258fa094ae00f28bcf11e27256553ea05ce82c06bada&width=1200" alt="Governo Trump Foca em 'IAs Woke' em Plano de Tecnologia">
+  </div>
+  <h3>Governo Trump Foca em "IAs Woke" em Plano de Tecnologia</h3>
+  <p>O governo do presidente <strong>Donald Trump</strong> nos <strong>Estados Unidos</strong> tem demonstrado uma preocupação com o "<strong>viés político</strong>" na <strong>inteligência artificial (IA)</strong>, em contraste com a administração anterior, que se concentrava mais em riscos de segurança e terrorismo. A preocupação se intensificou após o incidente do ano passado em que o modelo <strong>Gemini</strong>, do <strong>Google</strong>, gerou uma imagem considerada politicamente enviesada dos fundadores dos EUA.</p>
+  <p>Trump emitiu <strong>três ordens executivas</strong> para impulsionar o domínio americano em IA. Uma delas especificamente proíbe o governo de adquirir ou promover modelos de IA que contrariem as visões do presidente ou de seus apoiadores. Críticos consideram essa abordagem problemática, afirmando que o governo não deveria atuar como um "<strong>ministério da verdade da IA</strong>".</p>
+  <p><strong>Corrida Global e a Busca por Domínio Americano</strong></p>
+  <p>No cerne do plano do governo Trump está uma abordagem de nova <strong>Guerra Fria</strong>, em que a competição por IA é vista como uma corrida global de soma zero, onde não há espaço para duas potências. O governo busca o domínio americano no mercado de IA e está disposto a afrouxar regulamentações e descartar restrições à construção de infraestrutura, como novas <strong>usinas de energia</strong> para alimentar <strong>data centers</strong>, para impulsionar a inovação.</p>
+  <p>O governo também instruiu o <strong>Departamento de Comércio</strong> a montar um "<strong>pacote de tecnologia americana</strong>" para que compradores estrangeiros tenham acesso a produtos desenvolvidos nos EUA, como alternativa a modelos chineses como os da <strong>Huawei</strong> e <strong>DeepSeek</strong>. No entanto, a estratégia levanta questões sobre o quão arriscada a promoção da tecnologia pode ser, especialmente por ser propensa a "<strong>alucinações</strong>" que apresentam informações falsas como verdadeiras.</p>
+  <p><strong>Pressão de Empresas e Desafios de Regulamentação</strong></p>
+  <p>O setor de tecnologia tem pressionado o governo a descartar regulamentações mais rígidas. O CEO da <strong>Nvidia</strong>, por exemplo, conseguiu convencer o presidente a suspender a proibição da venda de chips para a <strong>China</strong>, argumentando que permitir a venda de produtos americanos no país é a única forma de torná-los um <strong>padrão global</strong>.</p>
+  <p>Embora o governo Trump tenha adotado algumas políticas da administração anterior, a retórica é notavelmente diferente, com um foco no combate a um suposto viés ideológico. O documento sobre o plano de ação de IA menciona os riscos da tecnologia, mas é vago sobre como o governo pode forçar melhores medidas de segurança em modelos que evoluem rapidamente, ressaltando o desafio de regulamentar uma tecnologia tão dinâmica.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://i0.wp.com/blog.empregare.com/wp-content/uploads/2024/06/Computacao-quantica-o-proximo-passo-na-revolucao-da-IA.jpg?fit=800%2C448&ssl=1" alt="Computação Quântica Caminha para Ser a Próxima Grande Revolução">
+  </div>
+  <h3>Computação Quântica Caminha para Ser a Próxima Grande Revolução</h3>
+  <p>A <strong>computação quântica</strong> vive um momento de grande avanço, comparável ao período que a <strong>inteligência artificial (IA)</strong> atravessou antes de sua popularização. Essa é a visão de <strong>James Daniel Whitfield</strong>, professor do <strong>Dartmouth College (EUA)</strong>, que destaca o aumento de investimentos de gigantes da tecnologia no setor. Segundo ele, embora a tecnologia ainda não tenha o mesmo reconhecimento cultural da IA, ela caminha para se tornar uma realidade industrial.</p>
+  <p>Whitfield ressalta que, enquanto a IA é impulsionada principalmente por <strong>softwares</strong>, a computação quântica está focada na construção do <strong>hardware</strong> para as futuras aplicações. A criação de dispositivos quânticos pode até mesmo fornecer dados de alta qualidade para o treinamento de IAs, já que hoje a qualidade dos dados é um problema.</p>
+  <p><strong>Desafios e Otimismo para o Futuro</strong></p>
+  <p>Apesar dos avanços, o campo da computação quântica enfrenta desafios. Um dos principais é a falta de <strong>modularidade</strong> dos dispositivos, que hoje funcionam de forma separada, em vez de integrada, o que dificulta o desenvolvimento de máquinas mais simples. Whitfield também é cauteloso ao prever o valor da tecnologia em áreas como <strong>otimização</strong>, acreditando que a <strong>simulação quântica</strong> pode ser a aplicação mais promissora.</p>
+  <p>O professor reforça que a computação quântica traz um risco para a <strong>criptografia atual</strong>, já que a tecnologia é capaz de decifrar códigos. Isso tem impulsionado o desenvolvimento de soluções de <strong>criptografia pós-quântica</strong> em diversos países. O cenário geopolítico tem, de forma geral, impulsionado os investimentos no campo, gerando uma "<strong>competição saudável</strong>". Por fim, Whitfield alerta que é crucial garantir que a computação quântica não amplie o <strong>abismo</strong> entre aqueles que têm acesso à tecnologia e aqueles que não têm.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/06/shutterstock_2581069595-e1753814444246-1920x1080.jpg" alt="OpenAI Volta Atrás e Mantém Opções Manuais no ChatGPT">
+  </div>
+  <h3>OpenAI Volta Atrás e Mantém Opções Manuais no ChatGPT</h3>
+  <p>A <strong>OpenAI</strong> recuou em sua promessa de simplificar o uso do <strong>ChatGPT</strong> após o lançamento do <strong>GPT-5</strong>. A ideia inicial era que a IA agisse como um modelo de "tamanho único", selecionando automaticamente a melhor versão para cada tarefa, sem que o usuário tivesse que escolher manualmente entre modelos como <strong>GPT-4o</strong> e <strong>GPT-4.5</strong>. No entanto, a empresa readmitiu as configurações manuais.</p>
+  <p>O <strong>CEO da OpenAI, Sam Altman</strong>, já havia expressado seu descontentamento com o seletor de modelos, mas a insatisfação de alguns usuários com o desempenho do GPT-5 após as mudanças levou a empresa a voltar atrás. Agora, modelos antigos, como o GPT-4o, estão novamente disponíveis para assinantes.</p>
+  <p><strong>Novas Opções de Velocidade e Personalidade</strong></p>
+  <p>Além de trazer de volta o seletor de modelos, a OpenAI também está implementando novas opções de velocidade para o GPT-5. O usuário poderá escolher entre três velocidades de resposta: "<strong>Auto</strong>", "<strong>Fast</strong>" (rápida) e "<strong>Thinking</strong>" ("pensante"). O modo "Auto" será o padrão, mas as outras opções darão mais controle para usuários que precisam de respostas mais rápidas ou mais elaboradas.</p>
+  <p>A empresa também está trabalhando para ajustar a personalidade do GPT-5. Altman afirmou que o objetivo é que o chatbot tenha uma personalidade mais acolhedora, mas sem ser excessivamente "bajuladora" como a do GPT-4o, que chegou a irritar alguns usuários. A OpenAI busca oferecer mais opções de personalização para que o ChatGPT se adapte ao tom de voz de cada usuário.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://www.estadao.com.br/resizer/v2/REZJDHW7FRDDDIYLKO25LZSJJU.jpg?quality=80&auth=557f5a2b8d38ca521d452913a700df25a209e676c379f68dccec1106f6f56c8c&width=1200&height=630&smart=true" alt="Óculos Inteligentes Causam Desconforto Social">
+  </div>
+  <h3>Óculos Inteligentes Causam Desconforto Social</h3>
+  <p>O uso de <strong>óculos inteligentes</strong>, que as gigantes da tecnologia como <strong>Meta</strong> e <strong>Google</strong> apostam que se tornarão os "principais dispositivos de computação" do futuro, está levantando questões sociais importantes. Um jornalista que testou um par da startup chinesa <strong>Even Realities</strong> relatou que o uso dos óculos, que parecem indistinguíveis de um par comum, gerou conversas estranhas e desconforto nas pessoas ao seu redor.</p>
+  <p>A principal causa do desconforto é a desconfiança de que o usuário possa estar gravando ou ouvindo as conversas. Mesmo que o modelo testado não tivesse câmera, a presença de <strong>microfones</strong> e a visibilidade de uma pequena tela projetada nas lentes levantaram suspeitas. A experiência mostra que, por mais que a tecnologia seja discreta, a mera possibilidade de gravação faz as pessoas se sentirem desconfortáveis, criando uma <strong>barreira social</strong>.</p>
+  <p><strong>Funcionalidades e Desafios de Adaptação</strong></p>
+  <p>Os óculos inteligentes da Even Realities funcionam como um <strong>smartwatch para o rosto</strong>, permitindo interações rápidas como ler notificações, usar um <strong>teleprompter</strong> ou pedir conselhos a <strong>chatbots</strong>. A tecnologia projeta mensagens e outras informações em um "<strong>guia de ondas</strong>" nas lentes, que é praticamente invisível para o usuário, mas pode ser notado por outras pessoas.</p>
+  <p>A experiência levanta um desafio social: como as pessoas se adaptarão a um mundo onde todos podem estar usando dispositivos que capturam informações e exibem notificações constantes? O jornalista relata que a tentação de se "desconectar" é real, pois a presença de uma notificação na tela, mesmo que monocromática, pode ser interpretada como um sinal de que o usuário está distraído ou ignorando a conversa.</p>
+  <p>Ainda que as empresas de tecnologia esperem que a sociedade se acostume com essa nova realidade, a análise mostra que o caminho para a <strong>ubiquidade dos óculos inteligentes</strong> pode ser mais complexo do que se imagina, exigindo uma mudança no comportamento social e na confiança mútua.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/07/shutterstock_2502179335-1-1920x1080.jpg" alt="Por Que Chatbots Erram e Não Sabem Explicar o Motivo?">
+  </div>
+  <h3>Por Que Chatbots Erram e Não Sabem Explicar o Motivo?</h3>
+  <p>O uso de chatbots como o <strong>ChatGPT</strong> e o <strong>Gemini</strong> para tarefas criativas e informativas é cada vez mais comum. No entanto, esses modelos também podem cometer erros e, quando questionados sobre o motivo, podem gerar respostas totalmente incorretas. A razão para isso, segundo um artigo da <strong>Ars Technica</strong>, é que os chatbots não têm <strong>consciência ou capacidade de reflexão</strong> sobre seus próprios erros. Eles apenas simulam conversas humanas com base em padrões de dados.</p>
+  <p>Um exemplo recente foi o de um assistente de IA que, após apagar um banco de dados, afirmou que não era possível recuperá-lo. A informação estava incorreta, e o banco foi restaurado. A resposta do chatbot não foi uma análise genuína do problema, mas sim uma história criada a partir dos dados em que foi treinado. O sistema simplesmente não tem a capacidade de analisar por que a falha ocorreu ou de admitir que não sabe a resposta.</p>
+  <p><strong>A Qualidade dos Dados e a "Alucinação" da IA</strong></p>
+  <p>A precisão de um chatbot é diretamente proporcional à qualidade dos dados usados para seu treinamento. As fontes de dados podem conter erros e informações falsas, o que aumenta o risco de imprecisão nas respostas. Além disso, os modelos de IA evitam dizer "não sei", preferindo criar respostas que pareçam plausíveis, mesmo que sejam incorretas, um fenômeno conhecido como "<strong>alucinação</strong>".</p>
+  <p>Especialistas ressaltam que, ao contrário dos humanos, os modelos de IA não têm uma <strong>base de conhecimento estável</strong> e não conseguem introspectar para avaliar o que sabem. Por isso, a mesma pergunta pode gerar respostas diferentes, pois os sistemas modernos combinam vários modelos de IA que não interagem entre si. O estudo reforça a importância de entender que, por mais que os chatbots simulem um comportamento humano, eles são apenas <strong>programas que imitam padrões de texto</strong>.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/seeke-4-1920x1080.jpg" alt="Seekee: O Novo Assistente de IA Multifuncional">
+  </div>
+  <h3>Seekee: O Novo Assistente de IA Multifuncional</h3>
+  <p>O <strong>Seekee</strong> é um novo aplicativo que promete ser um assistente de <strong>inteligência artificial (IA)</strong> completo, combinando diversas ferramentas em uma única plataforma. Disponível para <strong>Android</strong>, o app se divide em duas funções principais: uma central de IA e um navegador integrado.</p>
+  <p>A central de IA do Seekee oferece uma variedade de recursos, como:</p>
+  <ul>
+    <li><strong>Reconhecimento de imagens:</strong> analisa fotos e fornece uma descrição do conteúdo, semelhante ao <strong>Google Lens</strong>.</li>
+    <li><strong>Criação de textos:</strong> pode gerar relatórios, roteiros e propostas de projetos.</li>
+    <li><strong>Edição de documentos:</strong> permite converter arquivos e transcrever áudios para texto.</li>
+    <li><strong>Ferramentas de estudo:</strong> scaneia e corrige tarefas.</li>
+    <li><strong>Recursos “esotéricos”:</strong> oferece horóscopo e tarô com o auxílio de IA.</li>
+  </ul>
+  <p>O aplicativo utiliza <strong>IA multimodal</strong>, que combina visão computacional para analisar imagens, processamento de linguagem natural para textos, e reconhecimento automático de fala para áudios.</p>
+  <p><strong>Navegador e a Questão da Ilegalidade</strong></p>
+  <p>Além de ser um assistente de IA, o Seekee funciona como um hub de navegação e consumo de conteúdo, reunindo notícias e links de diferentes portais. No entanto, o aplicativo tem um ponto controverso. Ao buscar por filmes, séries e animes, ele exibe links para serviços de <strong>streaming ilegais</strong>, que permitem acesso a produções exclusivas de plataformas como <strong>Netflix</strong> e <strong>Disney</strong>, o que levanta sérias questões sobre a legalidade de seu uso.</p>
+  <p>Ainda que o Seekee prometa ser um assistente completo e gratuito, sem a necessidade de cadastro, é importante que os usuários estejam cientes dos riscos de acessar conteúdo de forma indevida. O app está disponível para Android, mas há confusão com a versão para <strong>iOS</strong>, que é publicada por outra empresa e tem um foco diferente.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://t.ctcdn.com.br/OBiQ_riYiZLwlP2gzGG4JMdpKxE=/1024x576/smart/i895851.jpeg" alt="Brasil Discute Estratégias Contra a Poluição por Microplásticos">
+  </div>
+  <h3>Brasil Discute Estratégias Contra a Poluição por Microplásticos</h3>
+  <p>A <strong>Academia Brasileira de Ciências (ABC)</strong> divulgou um relatório com estratégias para combater a <strong>poluição por microplásticos</strong> no <strong>Brasil</strong>. O documento destaca a urgência do problema, alertando que o país pode gerar até <strong>190 mil toneladas</strong> de resíduos plásticos nos oceanos anualmente. O relatório aponta que a maioria dos resíduos plásticos no mar (cerca de <strong>80%</strong>) tem origem em atividades terrestres, como turismo, indústria e gestão ineficiente de lixo.</p>
+  <p>O estudo enfatiza que, por serem minúsculos, os microplásticos se dispersam facilmente e entram na <strong>cadeia alimentar marinha</strong>, chegando até o consumo humano. Partículas plásticas já foram encontradas em órgãos humanos, como a <strong>placenta</strong> e o <strong>cordão umbilical</strong>, o que levanta sérias preocupações para a saúde.</p>
+  <p><strong>Propostas para Mitigar o Problema</strong></p>
+  <p>O relatório da ABC propõe uma série de ações para mitigar o problema, exigindo a mobilização do governo, do setor produtivo e da sociedade. Entre as sugestões estão:</p>
+  <ul>
+    <li>Atualização do <strong>Plano Nacional de Combate ao Lixo no Mar</strong>.</li>
+    <li>Fortalecimento da participação no <strong>Tratado sobre a Poluição Ambiental por Plásticos</strong>.</li>
+    <li>Mais investimentos em reciclagem, incentivo ao reuso e substituição de polímeros sintéticos por opções biodegradáveis.</li>
+    <li>Uso de tecnologias inovadoras, como a <strong>nanotecnologia</strong>, para reaproveitar o material.</li>
+    <li>Qualificação de profissionais e professores, além da implementação de <strong>campanhas de educação ambiental</strong>.</li>
+    <li>Revisão da legislação para garantir o descarte adequado dos resíduos.</li>
+  </ul>
+  <p>A presidente da ABC, <strong>Helena Nader</strong>, ressalta que é fundamental que todos os setores assumam a responsabilidade por todo o <strong>ciclo de vida do plástico</strong> para proteger a saúde humana e os ecossistemas.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://www.menosfios.com/wp-content/uploads/2017/09/happy-birthday-internet-6f9a216cb4ea51ec41660c5b6a945579.jpeg" alt="Pesquisa Estima Mais de um Bilhão de Sites no Mundo">
+  </div>
+  <h3>Pesquisa Estima Mais de um Bilhão de Sites no Mundo</h3>
+  <p>Uma pesquisa da empresa britânica <strong>Netcraft</strong> revelou um levantamento sobre a quantidade de sites no mundo em <strong>2025</strong>. Segundo a análise, há mais de <strong>1,2 bilhão de sites</strong>, embora a empresa ressalte que esse número é uma estimativa, pois a quantidade de portais muda a todo momento. Outro portal, o <strong>Siteefy</strong>, informa que apenas <strong>16%</strong> desses sites estão ativos, o que corresponde a mais de <strong>204 milhões de portais</strong> em uso.</p>
+  <p>A pesquisa também revelou quais são os sites mais acessados no mundo. O ranking global é liderado por serviços do <strong>Google</strong>, como <strong>Google</strong>, <strong>YouTube</strong> e <strong>Gmail</strong>, seguidos por plataformas como <strong>Outlook</strong>, <strong>Facebook</strong> e <strong>ChatGPT</strong>. No <strong>Brasil</strong>, a ordem muda um pouco, com plataformas nacionais como a <strong>Globo</strong> e o <strong>UOL</strong> entrando na lista dos mais acessados, junto com <strong>Instagram</strong> e <strong>WhatsApp</strong>.</p>
+  <p><strong>Uso Global da Internet</strong></p>
+  <p>O estudo também fornece dados sobre o uso global da internet e das redes sociais. De acordo com a plataforma <strong>Statista</strong>, em <strong>fevereiro de 2025</strong>, <strong>5,56 bilhões de pessoas</strong> utilizavam a internet no mundo, o que representa quase <strong>68% da população global</strong>. Deste total, <strong>5,24 bilhões</strong> são usuários de mídias sociais, o que demonstra a força dessas plataformas no mundo digital.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://wp-content.amenteemaravilhosa.com.br/2023/06/cerebro-mente-branco-1024x682-1.jpg" alt="Cientistas Desvendam o Fenômeno da 'Mente em Branco'">
+  </div>
+  <h3>Cientistas Desvendam o Fenômeno da "Mente em Branco"</h3>
+  <p>Pesquisadores estão usando tecnologias como a <strong>eletroencefalografia (EEG)</strong> e a <strong>ressonância magnética</strong> para entender o que acontece no cérebro quando a mente fica "<strong>em branco</strong>", um estado de ausência de conteúdo mental que é diferente do devaneio.</p>
+  <p>Estudos mostram que durante esses momentos, a atividade cerebral desacelera, e o cérebro apresenta uma <strong>hiperconectividade global</strong>, com diferentes regiões se sincronizando de uma forma semelhante ao que ocorre no <strong>sono profundo</strong>. Essa sincronização excessiva pode ser o motivo da ausência de pensamento consciente.</p>
+  <p><strong>Possível Função de "Mini-Reset" Cerebral</strong></p>
+  <p>Os pesquisadores especulam que a mente em branco pode funcionar como um "<strong>mini-reset</strong>" para o cérebro. Assim como o sono profundo ajuda na restauração neural, esses curtos períodos de inatividade mental podem servir para <strong>reorganizar processos internos</strong>, economizar energia e manter a saúde cerebral. Embora o estado não seja ideal para tarefas que exigem foco, é provável que todos nós passemos por ele várias vezes ao dia.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/05/Design-sem-nome-23-1920x1080.jpg" alt="Cientistas Estiman a Quantidade de Pensamentos Diários">
+  </div>
+  <h3>Cientistas Estiman a Quantidade de Pensamentos Diários</h3>
+  <p>Pesquisadores desenvolveram um método inovador para quantificar o número de pensamentos que uma pessoa tem por dia. O estudo, conduzido por <strong>Jordan Poppenk</strong> e <strong>Julie Tseng</strong>, utilizou <strong>ressonância magnética funcional (fMRI)</strong> para analisar as transições de ideias no cérebro. Eles descobriram que temos, em média, <strong>6.200 pensamentos por dia</strong>.</p>
+  <p>O método científico se concentrou em identificar o momento em que um pensamento termina e outro começa, o que os pesquisadores chamaram de "<strong>vermes do pensamento</strong>". A pesquisa descobriu que, independentemente de os participantes estarem em repouso ou assistindo a um filme, a transição entre os pensamentos está associada a <strong>padrões de ativação cerebral semelhantes</strong>.</p>
+  <p><strong>Pesquisa Ajuda a Compreender o Cérebro</strong></p>
+  <p>Historicamente, a pesquisa sobre o pensamento humano dependia de relatos dos próprios voluntários, um método considerado pouco confiável. Com o uso da fMRI, os pesquisadores conseguiram analisar as funções cerebrais de forma mais objetiva e precisa.</p>
+  <p>Além de responder a uma curiosidade sobre o número de pensamentos diários, o estudo abre portas para novas investigações sobre o funcionamento da mente. A metodologia tem o potencial de auxiliar no tratamento de transtornos como a <strong>esquizofrenia</strong> e o <strong>Transtorno do Déficit de Atenção e Hiperatividade (TDAH)</strong>, pois pode ajudar a detectar pensamentos desordenados de forma precoce.</p>
+</article>
+<article class="news-article">
+  <div class="article-image">
+    <img src="https://img.odcdn.com.br/wp-content/uploads/2025/08/idosa-1-1920x1080.jpg" alt="Trabalho Após Aposentadoria Aumenta Satisfação Pessoal">
+  </div>
+  <h3>Trabalho Após Aposentadoria Aumenta Satisfação Pessoal</h3>
+  <p>Um estudo publicado no <strong>Journal of Happiness Studies</strong> analisou os níveis de satisfação com a vida entre idosos que continuam trabalhando após a aposentadoria. A pesquisa, que avaliou mais de <strong>5 mil pessoas</strong> em <strong>Israel</strong>, descobriu que o trabalho contribui para o bem-estar geral dos idosos, pois oferece benefícios financeiros e não financeiros, como engajamento social e uma fonte de identidade e autoestima.</p>
+  <p>No entanto, o estudo notou uma diferença significativa entre os gêneros. Para os homens, o trabalho em <strong>tempo integral</strong> em idades avançadas está diretamente ligado a uma maior satisfação com a vida, independentemente da função. Já para as mulheres, essa satisfação só foi observada em empregos de <strong>alto status e bem remunerados</strong>.</p>
+  <p><strong>Diferenças de Gênero e os Benefícios do Trabalho</strong></p>
+  <p>A pesquisa sugere que a diferença entre os gêneros pode estar relacionada aos <strong>papéis tradicionais</strong>, nos quais o trabalho é um componente primário da autoidentidade masculina, enquanto as mulheres mantêm outros papéis que lhes proporcionam satisfação.</p>
+  <p>O estudo não encontrou evidências de que trabalhar após a aposentadoria prejudique o bem-estar. No entanto, ele reforça a importância de considerar fatores como a <strong>saúde</strong>, pois pessoas com problemas de saúde podem relatar um nível maior de insatisfação devido ao estresse adicional. A pesquisa contribui para o debate sobre como a vida após a aposentadoria pode ser mais saudável e satisfatória, especialmente para uma população com expectativas de vida cada vez maiores.</p>
+</article>
+  </section>
+</main>
+</div>
+
+<!-- Modal de conteúdo -->
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="main-modal-title">
+  <div class="modal-content">
+    <button id="modal-close" class="modal-close" aria-label="Fechar modal de notícias">&times;</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Modal de imagem -->
+<div id="imageModal" class="image-modal" role="dialog" aria-modal="true" aria-labelledby="image-modal-label">
+  <span id="image-modal-label" class="visually-hidden">Visualizador de Imagem Ampliada</span>
+  <button id="imageModalClose" class="image-modal-close" aria-label="Fechar imagem ampliada">&times;</button>
+  <img class="image-modal-content" id="expandedImage" alt="Imagem Ampliada">
+</div>
+
+<div id="tts-content-container" class="visually-hidden" aria-hidden="true"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+  const menuToggle=document.getElementById('menu-toggle');
+  const menuNav=document.querySelector('nav.menu');
+  if(menuToggle&&menuNav){
+    menuToggle.addEventListener('click',function(){
+      const isExpanded=this.getAttribute('aria-expanded')==='true';
+      this.classList.toggle('active');menuNav.classList.toggle('active');this.setAttribute('aria-expanded',!isExpanded);
+    });
+  }
+
+  const menuLinks=document.querySelectorAll('.menu a');
+  const mainModal=document.getElementById('modal');
+  const modalBody=document.getElementById('modal-body');
+  const mainModalCloseButton=document.getElementById('modal-close');
+  const highlightsGrid=document.querySelector('.highlights-grid');
+  const allNewsSections=document.querySelectorAll('section.news-section');
+  const imageModal=document.getElementById('imageModal');
+  const expandedImage=document.getElementById('expandedImage');
+  const imageModalCloseButton=document.getElementById('imageModalClose');
+  let previouslyFocusedElement;
+
+  function handleTrapFocusKeydown(e){
+    const modalElement=this;
+    const focusableElements=Array.from(modalElement.querySelectorAll('button,[href],input:not([type="hidden"]),select,textarea,[tabindex]:not([tabindex="-1"])')).filter(el=>el.offsetParent!==null);
+    if(focusableElements.length===0||e.key!=='Tab')return;
+    const first=focusableElements[0],last=focusableElements[focusableElements.length-1];
+    if(e.shiftKey){if(document.activeElement===first){last.focus();e.preventDefault();}}
+    else{if(document.activeElement===last){first.focus();e.preventDefault();}}
+  }
+  function trapFocusInModal(modalElement){
+    const closeBtn=modalElement.querySelector('.modal-close, .image-modal-close');
+    modalElement.removeEventListener('keydown',handleTrapFocusKeydown);
+    modalElement.addEventListener('keydown',handleTrapFocusKeydown);
+    if(closeBtn) closeBtn.focus();
+  }
+  function openModal(modalElement){
+    if(!modalElement)return;
+    previouslyFocusedElement=document.activeElement;
+    modalElement.classList.add('modal-open');
+    document.body.classList.add('body-modal-open');
+    trapFocusInModal(modalElement);
+  }
+  function closeModal(modalElement,onclose){
+    if(!modalElement)return;
+    modalElement.classList.remove('modal-open');
+    modalElement.removeEventListener('keydown',handleTrapFocusKeydown);
+    if(onclose) onclose();
+    if(!mainModal.classList.contains('modal-open')&&!imageModal.classList.contains('modal-open')){
+      document.body.classList.remove('body-modal-open');
+    }
+    if(previouslyFocusedElement&&typeof previouslyFocusedElement.focus==='function') previouslyFocusedElement.focus();
+  }
+
+  function openSectionInModal(targetSelector){
+    const target=document.querySelector(targetSelector);
+    if(!target||!modalBody)return;
+    modalBody.innerHTML="";
+    const sectionTitleEl=target.querySelector('h2');
+    const sectionTitleText=sectionTitleEl?sectionTitleEl.textContent:"Notícias";
+    const modalTitle=document.createElement('h2');
+    modalTitle.className='section-title-in-modal';modalTitle.id='main-modal-title';modalTitle.textContent=sectionTitleText;
+    modalBody.appendChild(modalTitle);
+    const accordionContainer=document.createElement('div');accordionContainer.className='accordion-container';
+    const articles=target.querySelectorAll('article.news-article');
+    const sectionBaseId=target.id||('s'+Date.now());
+    articles.forEach((article,index)=>{
+      const articleId=`${sectionBaseId}-article-${index}`,headerId=`${articleId}-header`,contentId=`${articleId}-content`;
+      const headerBtn=document.createElement('button');
+      headerBtn.className='accordion-header';headerBtn.id=headerId;headerBtn.setAttribute('aria-expanded','false');headerBtn.setAttribute('aria-controls',contentId);
+      const titleEl=article.querySelector('h3');
+      headerBtn.textContent=titleEl?titleEl.textContent.trim():`Artigo ${index+1}`;
+      const contentDiv=document.createElement('div');
+      contentDiv.className='accordion-content';contentDiv.id=contentId;contentDiv.setAttribute('role','region');contentDiv.setAttribute('aria-labelledby',headerId);contentDiv.style.display='none';
+      const clone=article.cloneNode(true);
+      clone.querySelectorAll('.article-image img').forEach(img=>{
+        img.setAttribute('tabindex','0');
+        img.addEventListener('click',e=>{e.stopPropagation();openImageZoomModal(img.src,img.alt);});
+        img.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();openImageZoomModal(img.src,img.alt);}});
+      });
+      contentDiv.appendChild(clone);
+      accordionContainer.appendChild(headerBtn);accordionContainer.appendChild(contentDiv);
+      headerBtn.addEventListener('click',function(){
+        const isExpanded=this.getAttribute('aria-expanded')==='true';
+        accordionContainer.querySelectorAll('.accordion-header').forEach(h=>{
+          if(h!==this){h.classList.remove('active');h.setAttribute('aria-expanded','false');const other=document.getElementById(h.getAttribute('aria-controls'));if(other){other.style.display='none';}}
+        });
+        this.classList.toggle('active',!isExpanded);
+        this.setAttribute('aria-expanded',!isExpanded);
+        contentDiv.style.display=isExpanded?'none':'block';
+      });
+    });
+    modalBody.appendChild(accordionContainer);
+    openModal(mainModal);
+  }
+
+  function openImageZoomModal(src,alt){
+    if(!expandedImage)return;
+    expandedImage.src=src;expandedImage.alt=alt||"Imagem Ampliada";
+    openModal(imageModal);
+  }
+
+  function createHighlights(){
+    if(!highlightsGrid)return;
+    highlightsGrid.innerHTML="";
+    allNewsSections.forEach(section=>{
+      const firstArticle=section.querySelector('article.news-article');
+      if(!firstArticle)return;
+      const sectionId=section.id;
+      const sectionTitleText=section.querySelector('h2')?.textContent||"Seção";
+      const articleTitleText=firstArticle.querySelector('h3')?.textContent.trim()||"Clique para ver os artigos";
+      const imageEl=firstArticle.querySelector('.article-image img');
+      const imageSrc=imageEl?.src||"https://via.placeholder.com/280x150/555/eee?text=Sem+Imagem";
+      const imageAlt=imageEl?.alt||`Miniatura para ${sectionTitleText}`;
+      const card=document.createElement('div');card.className='highlight-item';
+      const title=document.createElement('h3');title.textContent=sectionTitleText;
+      const thumb=document.createElement('img');thumb.src=imageSrc;thumb.alt=imageAlt;thumb.className='highlight-thumbnail';
+      const p=document.createElement('p');p.className='highlight-article-title';p.textContent=articleTitleText;
+      const a=document.createElement('a');a.href=`#${sectionId}`;a.className='read-more-link';a.textContent='Ver Seção Completa';
+      a.addEventListener('click',function(e){e.preventDefault();openSectionInModal(this.getAttribute('href'));});
+      card.append(title,thumb,p,a);highlightsGrid.appendChild(card);
+    });
+  }
+
+  function populateTtsContent(){
+    const tts=document.getElementById('tts-content-container');
+    if(!tts||!allNewsSections)return;
+    allNewsSections.forEach(section=>{
+      const st=section.querySelector('h2');const arts=section.querySelectorAll('article.news-article');
+      if(st) tts.appendChild(st.cloneNode(true));
+      arts.forEach((article,i)=>{tts.appendChild(article.cloneNode(true)); if(i<arts.length-1){const pause=document.createElement('div');pause.className='tts-pause-element';tts.appendChild(pause);}});
+    });
+  }
+
+  menuLinks.forEach(link=>link.addEventListener('click',function(e){e.preventDefault();const target=this.getAttribute('href');if(target) openSectionInModal(target);}));
+  mainModalCloseButton?.addEventListener('click',()=>closeModal(mainModal,()=>modalBody.innerHTML=""));
+  mainModal?.addEventListener('click',e=>{if(e.target===mainModal) closeModal(mainModal,()=>modalBody.innerHTML="");});
+  imageModalCloseButton?.addEventListener('click',()=>closeModal(imageModal,()=>expandedImage.src=""));
+  imageModal?.addEventListener('click',e=>{if(e.target===imageModal) closeModal(imageModal,()=>expandedImage.src="");});
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){
+      if(imageModal?.classList.contains('modal-open')) closeModal(imageModal,()=>expandedImage.src="");
+      else if(mainModal?.classList.contains('modal-open')) closeModal(mainModal,()=>modalBody.innerHTML="");
+    }
+  });
+
+  createHighlights();
+  populateTtsContent();
+});
+</script>
+</body>
+</html>
